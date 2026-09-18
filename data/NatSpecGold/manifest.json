@@ -1,0 +1,3070 @@
+{
+ "88mph/contracts/DInterest.sol": {
+  "bytes": 57010,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "5523ccc6f476943bab4b7e90ef4e11bd9e897b95",
+  "unresolved_imports": [
+   "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol",
+   "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+   "hardhat/console.sol"
+  ]
+ },
+ "88mph/contracts/DInterestLens.sol": {
+  "bytes": 8025,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "649bb9dbba30dc9a4eb4906ebd8f2aad9fb342f2",
+  "unresolved_imports": []
+ },
+ "88mph/contracts/DInterestWithDepositFee.sol": {
+  "bytes": 4841,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "fcbb8d572aedc3f807b14c5e7524d787d15c4c72",
+  "unresolved_imports": []
+ },
+ "88mph/contracts/libs/DecMath.sol": {
+  "bytes": 401,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "dependency",
+  "sha1": "b4675cfe7943569380076f1170db56d45731b434",
+  "unresolved_imports": []
+ },
+ "88mph/contracts/libs/ERC1155Base.sol": {
+  "bytes": 4286,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "dependency",
+  "sha1": "91fc8aa82a33de886e92ae37488a7e89479ca1da",
+  "unresolved_imports": [
+   "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
+  ]
+ },
+ "88mph/contracts/libs/ERC1155DividendToken.sol": {
+  "bytes": 13568,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "ee20f4b9e33b53041490c016624da85ded2a8412",
+  "unresolved_imports": [
+   "@openzeppelin/contracts-upgradeable/utils/math/SafeCastUpgradeable.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "88mph/contracts/libs/ERC1155Upgradeable.sol": {
+  "bytes": 18082,
+  "pragma": "^0.8.0",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "60c6aa56e604d2c57ed0af78ff6c05bb862a043b",
+  "unresolved_imports": [
+   "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
+   "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/IERC1155MetadataURIUpgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol"
+  ]
+ },
+ "88mph/contracts/libs/ERC20Wrapper.sol": {
+  "bytes": 6769,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "bd0dc455659e24abc3dd0cfb2c5962f25ffc8cc3",
+  "unresolved_imports": [
+   "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "88mph/contracts/libs/Rescuable.sol": {
+  "bytes": 1298,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "c0ad73806b1875561a40f6e96191ed8dfde81b74",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "88mph/contracts/libs/SafeERC20.sol": {
+  "bytes": 3234,
+  "pragma": "^0.8.0",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "7eee68450985abcf24174fd66af4d424cd46f974",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/utils/Address.sol"
+  ]
+ },
+ "88mph/contracts/libs/Sponsorable.sol": {
+  "bytes": 5356,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "f52622b5ef9e0e8261a9e4c79f2077d0db5c6935",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/utils/cryptography/ECDSA.sol"
+  ]
+ },
+ "88mph/contracts/libs/WrappedERC1155Token.sol": {
+  "bytes": 6190,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "6f1947f5bcda4d2f0a23b564cdee04ec575dfc0a",
+  "unresolved_imports": [
+   "@openzeppelin/contracts-upgradeable/proxy/ClonesUpgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol"
+  ]
+ },
+ "88mph/contracts/models/fee/IFeeModel.sol": {
+  "bytes": 478,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "dependency",
+  "sha1": "49df9bd7a9c83e1cc1291a67c276868c432e4ca0",
+  "unresolved_imports": []
+ },
+ "88mph/contracts/models/interest-oracle/IInterestOracle.sol": {
+  "bytes": 368,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "dependency",
+  "sha1": "e75305b1e639e189fc4f061499d8267435263f5a",
+  "unresolved_imports": []
+ },
+ "88mph/contracts/models/interest/IInterestModel.sol": {
+  "bytes": 373,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "dependency",
+  "sha1": "4929fd8468cd6bddd1570a01b11f6d8de33c7575",
+  "unresolved_imports": []
+ },
+ "88mph/contracts/moneymarkets/MoneyMarket.sol": {
+  "bytes": 2284,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "62a6e8b6efa722d48729e3e0bf0f460fb95a8239",
+  "unresolved_imports": [
+   "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+   "@openzeppelin/contracts/token/ERC20/ERC20.sol"
+  ]
+ },
+ "88mph/contracts/moneymarkets/aave/AaveMarket.sol": {
+  "bytes": 4425,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "e151a0b34106f368598776dcb7250024ba4fc396",
+  "unresolved_imports": [
+   "./imports/IAaveMining.sol",
+   "./imports/ILendingPool.sol",
+   "./imports/ILendingPoolAddressesProvider.sol",
+   "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
+   "@openzeppelin/contracts/token/ERC20/ERC20.sol"
+  ]
+ },
+ "88mph/contracts/moneymarkets/bprotocol/BProtocolMarket.sol": {
+  "bytes": 4302,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "b082679fdf99061d3c14ee89fd8caa21770b3d7d",
+  "unresolved_imports": [
+   "./imports/IBComptroller.sol",
+   "./imports/IBToken.sol",
+   "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
+   "@openzeppelin/contracts/token/ERC20/ERC20.sol"
+  ]
+ },
+ "88mph/contracts/moneymarkets/compound/CompoundERC20Market.sol": {
+  "bytes": 4326,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "acc397a9d5d9a0aaed290015837b69ac17599fbe",
+  "unresolved_imports": [
+   "./imports/ICERC20.sol",
+   "./imports/IComptroller.sol",
+   "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
+   "@openzeppelin/contracts/token/ERC20/ERC20.sol"
+  ]
+ },
+ "88mph/contracts/moneymarkets/cream/CreamERC20Market.sol": {
+  "bytes": 3571,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "b7f84943c448b75a276209246305060c6e7227dc",
+  "unresolved_imports": [
+   "./imports/ICrERC20.sol",
+   "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
+   "@openzeppelin/contracts/token/ERC20/ERC20.sol"
+  ]
+ },
+ "88mph/contracts/moneymarkets/harvest/HarvestMarket.sol": {
+  "bytes": 4664,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "f2c54ef3bde380f892fffb7328e5d1d57d14b66f",
+  "unresolved_imports": [
+   "./imports/HarvestStaking.sol",
+   "./imports/HarvestVault.sol",
+   "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
+   "@openzeppelin/contracts/token/ERC20/ERC20.sol"
+  ]
+ },
+ "88mph/contracts/moneymarkets/yvault/YVaultMarket.sol": {
+  "bytes": 3434,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "196983b4f9293f619cf7214fd0690033886a22b1",
+  "unresolved_imports": [
+   "./imports/Vault.sol",
+   "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
+   "@openzeppelin/contracts/token/ERC20/ERC20.sol"
+  ]
+ },
+ "88mph/contracts/rewards/MPHMinter.sol": {
+  "bytes": 11373,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "0a34f1e70032f735684cff68de8be470a7448ed2",
+  "unresolved_imports": [
+   "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol"
+  ]
+ },
+ "88mph/contracts/rewards/MPHToken.sol": {
+  "bytes": 858,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "dependency",
+  "sha1": "5036ff6a973db9ea1ec7c04bd1513fc5a0461ad5",
+  "unresolved_imports": [
+   "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol"
+  ]
+ },
+ "88mph/contracts/rewards/Vesting02.sol": {
+  "bytes": 9062,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "9f1cd2dd897cd8e385f8c86ecc9f06585567f61f",
+  "unresolved_imports": [
+   "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "88mph/contracts/rewards/xMPH.sol": {
+  "bytes": 8028,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "3be743241046a074915cb3209e77cb54ae2dc45d",
+  "unresolved_imports": [
+   "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
+   "@openzeppelin/contracts/token/ERC20/ERC20.sol"
+  ]
+ },
+ "88mph/contracts/tokens/FundingMultitoken.sol": {
+  "bytes": 4012,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "829734a9d171dfc0e70e8f1b2a1aee84bdea1cce",
+  "unresolved_imports": []
+ },
+ "88mph/contracts/tokens/NFT.sol": {
+  "bytes": 1503,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "dependency",
+  "sha1": "25eb1d47358794f58b37d527c1cfee49393b991e",
+  "unresolved_imports": [
+   "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol"
+  ]
+ },
+ "88mph/contracts/zero-coupon-bond/ZeroCouponBond.sol": {
+  "bytes": 6886,
+  "pragma": "0.8.3",
+  "project": "88mph",
+  "role": "scored",
+  "sha1": "024ac2e75d8181e01b297c2fa1d5ff1cc57c7cf2",
+  "unresolved_imports": [
+   "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol",
+   "@openzeppelin/contracts/token/ERC20/ERC20.sol"
+  ]
+ },
+ "across-v2/contracts/Arbitrum_SpokePool.sol": {
+  "bytes": 4650,
+  "pragma": "^0.8.0",
+  "project": "across-v2",
+  "role": "scored",
+  "sha1": "f5ccedcbfcfbd121b3e7dda223e422caea669e08",
+  "unresolved_imports": []
+ },
+ "across-v2/contracts/Ethereum_SpokePool.sol": {
+  "bytes": 1466,
+  "pragma": "^0.8.0",
+  "project": "across-v2",
+  "role": "scored",
+  "sha1": "16084e8c02828ae164d01340f7638692b2ca8370",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/access/Ownable.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "across-v2/contracts/HubPool.sol": {
+  "bytes": 48334,
+  "pragma": "^0.8.0",
+  "project": "across-v2",
+  "role": "scored",
+  "sha1": "20728e2ce0c0739a22dd985efd023391673b5a93",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/access/Ownable.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+   "@openzeppelin/contracts/utils/Address.sol",
+   "@uma/core/contracts/common/implementation/AncillaryData.sol",
+   "@uma/core/contracts/common/implementation/MultiCaller.sol",
+   "@uma/core/contracts/common/implementation/Testable.sol",
+   "@uma/core/contracts/common/interfaces/AddressWhitelistInterface.sol",
+   "@uma/core/contracts/common/interfaces/ExpandedIERC20.sol",
+   "@uma/core/contracts/oracle/implementation/Constants.sol",
+   "@uma/core/contracts/oracle/interfaces/FinderInterface.sol",
+   "@uma/core/contracts/oracle/interfaces/IdentifierWhitelistInterface.sol",
+   "@uma/core/contracts/oracle/interfaces/SkinnyOptimisticOracleInterface.sol",
+   "@uma/core/contracts/oracle/interfaces/StoreInterface.sol"
+  ]
+ },
+ "across-v2/contracts/HubPoolInterface.sol": {
+  "bytes": 4480,
+  "pragma": "^0.8.0",
+  "project": "across-v2",
+  "role": "dependency",
+  "sha1": "0079f83524cd025f11e280469beaa331d5e543a0",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "across-v2/contracts/Lockable.sol": {
+  "bytes": 3243,
+  "pragma": "^0.8.0",
+  "project": "across-v2",
+  "role": "scored",
+  "sha1": "d30e08e7d8e6cc4dbe31b2190e19b993c4c97055",
+  "unresolved_imports": []
+ },
+ "across-v2/contracts/LpTokenFactory.sol": {
+  "bytes": 1408,
+  "pragma": "^0.8.0",
+  "project": "across-v2",
+  "role": "scored",
+  "sha1": "b07e69e73ddc7481ff56e350af52f82d7be6d148",
+  "unresolved_imports": [
+   "@uma/core/contracts/common/implementation/ExpandedERC20.sol"
+  ]
+ },
+ "across-v2/contracts/MerkleLib.sol": {
+  "bytes": 4129,
+  "pragma": "^0.8.0",
+  "project": "across-v2",
+  "role": "scored",
+  "sha1": "8cce152f173c7dd1ddd3173ab6143a9a1da24ce0",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol"
+  ]
+ },
+ "across-v2/contracts/Optimism_SpokePool.sol": {
+  "bytes": 5795,
+  "pragma": "^0.8.0",
+  "project": "across-v2",
+  "role": "scored",
+  "sha1": "5daad72be9e29b66cb6eba09872138ebd49cc6dc",
+  "unresolved_imports": [
+   "@eth-optimism/contracts/L2/messaging/IL2ERC20Bridge.sol",
+   "@eth-optimism/contracts/libraries/bridge/CrossDomainEnabled.sol",
+   "@eth-optimism/contracts/libraries/constants/Lib_PredeployAddresses.sol"
+  ]
+ },
+ "across-v2/contracts/PolygonTokenBridger.sol": {
+  "bytes": 3448,
+  "pragma": "^0.8.0",
+  "project": "across-v2",
+  "role": "scored",
+  "sha1": "2a670011865ef4a196dcc2e8ec16ce8f4ab3a2e1",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol"
+  ]
+ },
+ "across-v2/contracts/Polygon_SpokePool.sol": {
+  "bytes": 6772,
+  "pragma": "^0.8.0",
+  "project": "across-v2",
+  "role": "scored",
+  "sha1": "60204c4babac9a0540380637ad295bd26cf0eb8f",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol"
+  ]
+ },
+ "across-v2/contracts/SpokePool.sol": {
+  "bytes": 40890,
+  "pragma": "^0.8.0",
+  "project": "across-v2",
+  "role": "scored",
+  "sha1": "c2d903f2be076668c687f5c9192b23896e6f15cc",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+   "@openzeppelin/contracts/utils/Address.sol",
+   "@openzeppelin/contracts/utils/cryptography/ECDSA.sol",
+   "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol",
+   "@uma/core/contracts/common/implementation/MultiCaller.sol",
+   "@uma/core/contracts/common/implementation/Testable.sol"
+  ]
+ },
+ "across-v2/contracts/SpokePoolInterface.sol": {
+  "bytes": 4519,
+  "pragma": "^0.8.0",
+  "project": "across-v2",
+  "role": "dependency",
+  "sha1": "b3cc26728fdd905074d1472140ebfe381d72366d",
+  "unresolved_imports": []
+ },
+ "across-v2/contracts/chain-adapters/Arbitrum_Adapter.sol": {
+  "bytes": 5314,
+  "pragma": "^0.8.0",
+  "project": "across-v2",
+  "role": "scored",
+  "sha1": "b05d6606c2c6bf357668d562cda7e482ba09e3f0",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "across-v2/contracts/chain-adapters/CrossDomainEnabled.sol": {
+  "bytes": 2359,
+  "pragma": ">0.5.0 <0.9.0",
+  "project": "across-v2",
+  "role": "scored",
+  "sha1": "d51add4b1f825c65f3b14f9b2fc67ef6da700ecb",
+  "unresolved_imports": [
+   "@eth-optimism/contracts/libraries/bridge/ICrossDomainMessenger.sol"
+  ]
+ },
+ "across-v2/contracts/chain-adapters/Ethereum_Adapter.sol": {
+  "bytes": 2853,
+  "pragma": "^0.8.0",
+  "project": "across-v2",
+  "role": "scored",
+  "sha1": "39ad7a8f933929dc514773d6742f48e1138d39d7",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+   "@uma/core/contracts/common/implementation/Lockable.sol"
+  ]
+ },
+ "across-v2/contracts/chain-adapters/Optimism_Adapter.sol": {
+  "bytes": 2649,
+  "pragma": "^0.8.0",
+  "project": "across-v2",
+  "role": "scored",
+  "sha1": "30f91b2c57fbfa967f6b4e455644b19ed2f765d8",
+  "unresolved_imports": [
+   "@eth-optimism/contracts/L1/messaging/IL1StandardBridge.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+   "@uma/core/contracts/common/implementation/Lockable.sol"
+  ]
+ },
+ "across-v2/contracts/chain-adapters/Polygon_Adapter.sol": {
+  "bytes": 2868,
+  "pragma": "^0.8.0",
+  "project": "across-v2",
+  "role": "scored",
+  "sha1": "25c3449a4e323905211e07b77ad8fd9cbb438a04",
+  "unresolved_imports": [
+   "@eth-optimism/contracts/L1/messaging/IL1StandardBridge.sol",
+   "@eth-optimism/contracts/libraries/bridge/CrossDomainEnabled.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol"
+  ]
+ },
+ "across-v2/contracts/interfaces/AdapterInterface.sol": {
+  "bytes": 614,
+  "pragma": "^0.8.0",
+  "project": "across-v2",
+  "role": "dependency",
+  "sha1": "c228860d6c46f5c2ed9cdbdbc3153d481d1678d0",
+  "unresolved_imports": []
+ },
+ "across-v2/contracts/interfaces/LpTokenFactoryInterface.sol": {
+  "bytes": 235,
+  "pragma": "^0.8.0",
+  "project": "across-v2",
+  "role": "dependency",
+  "sha1": "90fef21782f52e586882e847b8416b8ffbb72c02",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "across-v2/contracts/interfaces/WETH9.sol": {
+  "bytes": 306,
+  "pragma": "^0.8.0",
+  "project": "across-v2",
+  "role": "dependency",
+  "sha1": "d5bdf36ded66a3eeaf77c4ac8c84abaa46d790ea",
+  "unresolved_imports": []
+ },
+ "eip4337/EntryPoint.sol": {
+  "bytes": 15567,
+  "pragma": "^0.8.7",
+  "project": "eip4337",
+  "role": "scored",
+  "sha1": "c1608706f018860b0643334fb95aa57615c03c0a",
+  "unresolved_imports": [
+   "./IPaymaster.sol",
+   "./IWallet.sol",
+   "./StakeManager.sol",
+   "./UserOperation.sol"
+  ]
+ },
+ "element-finance/contracts/ConvergentCurvePool.sol": {
+  "bytes": 34213,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "af8f188437f95bc2e9b2bbc83d68cd3ca2d66fba",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/InterestToken.sol": {
+  "bytes": 2252,
+  "pragma": "^0.8.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "377bd9e001748d372d8e543e50745706dae61ee1",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/Tranche.sol": {
+  "bytes": 9722,
+  "pragma": "^0.8.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "5236c3d49c102448bbdca11552bf8f17b76fc9a4",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/UserProxy.sol": {
+  "bytes": 8531,
+  "pragma": "^0.8.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "09b9475573ba4b1eab31aa3f977ce14916888aee",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/WrappedPosition.sol": {
+  "bytes": 7040,
+  "pragma": "^0.8.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "9057fb8450de62f958d7541f55444179e8884e98",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/YVaultAssetProxy.sol": {
+  "bytes": 10966,
+  "pragma": "^0.8.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "834871f8e2f130a4efa9312ff6b4e160d97690f9",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/lib/helpers/AssetHelpers.sol": {
+  "bytes": 2619,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "454048639c172cf0ae5cdfc5beab83d6fe99d2ba",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/lib/helpers/Authentication.sol": {
+  "bytes": 1543,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "2d97088b25c62d90b1a21fb0fd77c2d4f84b4c40",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/lib/helpers/BalancerErrors.sol": {
+  "bytes": 10765,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "ac0ad3ca06913a4986127e986bab229c246a4e30",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/lib/helpers/EmergencyPeriod.sol": {
+  "bytes": 2615,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "7c9273db8381b9df79b9213c90f70f1fbbd5ad19",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/lib/helpers/EnumerableMap.sol": {
+  "bytes": 18214,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "8bd7b287fa6183c3ac569d9be0e9f4529c9b34c3",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/lib/helpers/InputHelpers.sol": {
+  "bytes": 2137,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "08b29b722583c0312ce375af6f803b146d11fc87",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/lib/helpers/ReentrancyGuard.sol": {
+  "bytes": 3109,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "6bbf9b1b8e98a01fafbe52ebdec6fbdeddb156ec",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/lib/math/FixedPoint.sol": {
+  "bytes": 5735,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "8c44001d455596173c75d5660a8e66b7602f7520",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/lib/math/LogExpMath.sol": {
+  "bytes": 10592,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "87aedd58fb798ca25f665656e3ab9bfe1f56b072",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/lib/math/Math.sol": {
+  "bytes": 2368,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "14777218c794eb42ab4887364e0ff424859ce2f9",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/lib/openzeppelin/AccessControl.sol": {
+  "bytes": 7311,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "0b1d340e14be5ca96022ce49c9b63976e8e5b504",
+  "unresolved_imports": [
+   "./Context.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/lib/openzeppelin/Address.sol": {
+  "bytes": 6799,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "ca561e5a692ee90b25f703cff03aa18f5ecfd893",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/lib/openzeppelin/Counters.sol": {
+  "bytes": 1505,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "867d6a9c5fb1ffac64cb85883ee83cb90455a148",
+  "unresolved_imports": [
+   "./SafeMath.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/lib/openzeppelin/ERC20.sol": {
+  "bytes": 10793,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "0205b0c2b648b2564d04ebb10748a83fc1fbd1d1",
+  "unresolved_imports": [
+   "./Context.sol",
+   "./SafeMath.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/lib/openzeppelin/EnumerableSet.sol": {
+  "bytes": 9410,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "3b0c1792b19a5093e392fa23ea053140b63066c9",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/lib/openzeppelin/SafeCast.sol": {
+  "bytes": 6514,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "3cb66efbab359bb468a8376fcf5fad97d11b9e5d",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/lib/openzeppelin/SafeERC20.sol": {
+  "bytes": 2412,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "3fbf9064a854a288212944d8cd4c7242d2b37464",
+  "unresolved_imports": [
+   "./SafeMath.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/pools/BalancerPoolToken.sol": {
+  "bytes": 5421,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "d27416fc5d003b39b1279c5a95e68a475ba244cc",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/pools/BaseGeneralPool.sol": {
+  "bytes": 4163,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "5797d3a49bbef99689670a28698917075c05fee3",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/pools/BaseMinimalSwapInfoPool.sol": {
+  "bytes": 4893,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "61816d00bdc76969a99f8dd033acced591945180",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/pools/BasePool.sol": {
+  "bytes": 30278,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "a2e784ffbc430a04b44ed4f6d16262bf44125e3c",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/pools/BasePoolAuthorization.sol": {
+  "bytes": 1528,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "dc1871d193250c4aae4df0e04e3421b326de4428",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/pools/BasePoolFactory.sol": {
+  "bytes": 1199,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "bd7c38e1f538bf1d5eb49df15cf7deed493badcf",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/pools/stable/StableMath.sol": {
+  "bytes": 23502,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "c36e904238b0c56bee745fb052a7670522a92b04",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/pools/stable/StablePool.sol": {
+  "bytes": 14763,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "59cfaf2f85fa59efde3a0480536049ca6d91ecb4",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/pools/stable/StablePoolFactory.sol": {
+  "bytes": 1745,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "b44aac6523acb4f28961cd7e0916a5531cd96256",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/pools/stable/StablePoolUserDataHelpers.sol": {
+  "bytes": 2493,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "e9020d2aaf3f0ea08262f642155ddb2b1d8b771a",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/pools/weighted/WeightedMath.sol": {
+  "bytes": 17917,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "4ab8ccbe73750de2786a1ecd54536ee49db0198f",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/pools/weighted/WeightedPool.sol": {
+  "bytes": 21911,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "546fac07b9b74a76fa447b6478fcd197665216c9",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/pools/weighted/WeightedPoolFactory.sol": {
+  "bytes": 1732,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "2c3aa0be6aabeb54c5b97ef562752b1a7634b2eb",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/pools/weighted/WeightedPoolUserDataHelpers.sol": {
+  "bytes": 2547,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "bfd7f9d564b94f53d0391078cf9a58ea9e34ace2",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/vault/AssetTransfersHandler.sol": {
+  "bytes": 6983,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "845e9ce098062abe8905d7a3c2189a529b94e050",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/vault/Authorizer.sol": {
+  "bytes": 2153,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "0246b9ec17c20ead41c8ac1479be15b2694e8d7c",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/vault/Fees.sol": {
+  "bytes": 2625,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "61dbb78ac744c604bb199b5a28de1776d6fea4ac",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/vault/InternalBalance.sol": {
+  "bytes": 9708,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "828aa488e94b00a292298804d5b40a1ca3fb6007",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/vault/PoolAssets.sol": {
+  "bytes": 18898,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "724f5dfdef62033dd76242b8f12637af1ae464fa",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/vault/PoolRegistry.sol": {
+  "bytes": 4571,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "11da773f0f1871b5e3ef30d819e8c90f65703f2f",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/vault/ProtocolFeesCollector.sol": {
+  "bytes": 4336,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "cd291116b1d5b53ef957b598bbbe4bd6ca067c11",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/vault/Swaps.sol": {
+  "bytes": 27146,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "9078e84389b814bfab5735a28c3bcdd80db133c6",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/vault/VaultAuthorization.sol": {
+  "bytes": 3154,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "5b84a4c86f9c24a9555fd210115022962150baf9",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/vault/balances/BalanceAllocation.sol": {
+  "bytes": 13234,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "d102c5be6557444dda763334627cb3b0e03b0728",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/vault/balances/GeneralPoolsBalance.sol": {
+  "bytes": 6750,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "398730eeb843dc339b582cd432c6fed2f70173dc",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/vault/balances/MinimalSwapInfoPoolsBalance.sol": {
+  "bytes": 6993,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "514d3c3aa9739a489c1011e5984c6ffa919cdbc9",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/vault/balances/TwoTokenPoolsBalance.sol": {
+  "bytes": 13672,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "32283a1770d47807a959fb5e0d8e2fce81cbfa5d",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/vault/interfaces/IAsset.sol": {
+  "bytes": 1129,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "aef27f5317e2f50bdbdd40b7aff3caefcfe60526",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/vault/interfaces/IAuthorizer.sol": {
+  "bytes": 821,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "d091aa97a80617706ecd00d9a558166dc151b4b0",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/vault/interfaces/IBasePool.sol": {
+  "bytes": 4804,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "38b10d415e001a766891fdf0bd51c3ecb76353f3",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/vault/interfaces/IFlashLoanReceiver.sol": {
+  "bytes": 1047,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "950f791d246819ba1aa300635eda779c8f881b4f",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/vault/interfaces/IGeneralPool.sol": {
+  "bytes": 1631,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "4f44b1191d22ddaf854fc9bced6f39ed695a7883",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/vault/interfaces/IMinimalSwapInfoPool.sol": {
+  "bytes": 1661,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "b220bf63b277b746554831340e538b48b0194b62",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/balancer-core-v2/vault/interfaces/IPoolSwapStructs.sol": {
+  "bytes": 2293,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "b788d2cb149621a60d08bceaa1779e34adab652e",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/vault/interfaces/IVault.sol": {
+  "bytes": 37924,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "d470b5f998b97e50843d49d0eb8c66accb48db4e",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/balancer-core-v2/vault/interfaces/IWETH.sol": {
+  "bytes": 891,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "9dae4ea73614da1495bb84b0a3d69b98f7edeeb1",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/factories/ConvergentPoolFactory.sol": {
+  "bytes": 3149,
+  "pragma": "^0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "542603cd2ec626104d8284917e27b184c88752b7",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/factories/InterestTokenFactory.sol": {
+  "bytes": 1408,
+  "pragma": "^0.8.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "b9dc44350cabafc7f3e6ae69a927734ddda5b0d8",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/factories/TrancheFactory.sol": {
+  "bytes": 3736,
+  "pragma": "^0.8.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "4bedaf8d04be656841f57a539e6dc97ecc54ee6a",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/interfaces/IERC20.sol": {
+  "bytes": 977,
+  "pragma": "^0.8.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "1de4d8f66ee06b62a3ef8e32237b456017d2c263",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/interfaces/IERC20Decimals.sol": {
+  "bytes": 268,
+  "pragma": ">=0.7.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "cac9dad1a7483d3593674b8842b628544ab5285d",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "element-finance/contracts/interfaces/IERC20Permit.sol": {
+  "bytes": 2230,
+  "pragma": "^0.8.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "77e08e76d0fc3645aa69f6e34c0e547422d14051",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/interfaces/IInterestToken.sol": {
+  "bytes": 266,
+  "pragma": "^0.8.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "94456d49977bfbaa0eebb1f5e6bcc87443aed64b",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/interfaces/IInterestTokenFactory.sol": {
+  "bytes": 344,
+  "pragma": "^0.8.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "3afd1b02ff4dcbb1681c0a297c3b9089538cf1d0",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/interfaces/ITranche.sol": {
+  "bytes": 745,
+  "pragma": "^0.8.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "daef56c5d78cbf5cf7b4e63d290108147eb3a634",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/interfaces/ITrancheFactory.sol": {
+  "bytes": 263,
+  "pragma": "^0.8.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "7336d57f76d4ba11a1aaf54cc51d3f0fc9c38b25",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/interfaces/IWETH.sol": {
+  "bytes": 315,
+  "pragma": "^0.8.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "02935197f6823a182b4d92fd9c00e0e6b08f41d0",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/interfaces/IWrappedPosition.sol": {
+  "bytes": 941,
+  "pragma": "^0.8.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "3167c3cf085d21b9d035749829d5f6d63d47c660",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/interfaces/IYearnVaultV2.sol": {
+  "bytes": 670,
+  "pragma": "^0.8.0",
+  "project": "element-finance",
+  "role": "dependency",
+  "sha1": "cfd355b14a717d1a8b7a10d419e17cd92c152c20",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/libraries/Authorizable.sol": {
+  "bytes": 1801,
+  "pragma": ">=0.7.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "dff061c9225258e3c4b7395b770a4d8c8f25934d",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/libraries/DateString.sol": {
+  "bytes": 7241,
+  "pragma": "^0.8.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "5c85d39222076cd464a43733402e362e8f6c1ba7",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/libraries/ERC20Permit.sol": {
+  "bytes": 10426,
+  "pragma": "^0.8.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "2efb88b9d27def63c67c03f8f995b932cd1eaf18",
+  "unresolved_imports": []
+ },
+ "element-finance/contracts/libraries/ERC20PermitWithSupply.sol": {
+  "bytes": 1465,
+  "pragma": "^0.8.0",
+  "project": "element-finance",
+  "role": "scored",
+  "sha1": "adba29b231f4abd0040a61fb5616052529a0b088",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/core/CollectNFT.sol": {
+  "bytes": 2463,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "a813eb241ac623ccb1fe23fe1264a4ff997013c2",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/core/FollowNFT.sol": {
+  "bytes": 7922,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "4350f056d809ec4c763966698d76b8f53764704e",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol"
+  ]
+ },
+ "lens-protocol/contracts/core/LensHub.sol": {
+  "bytes": 30667,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "2312d78dc98f89671243179987d857b888638140",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/core/base/ERC721Enumerable.sol": {
+  "bytes": 7249,
+  "pragma": "^0.8.0",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "264739f84e2419ff88348f9b94ccf49fa009889d",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol"
+  ]
+ },
+ "lens-protocol/contracts/core/base/ERC721Time.sol": {
+  "bytes": 15392,
+  "pragma": "^0.8.0",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "74460025ae04f391dfebb8f1c1e68ea27a1cea0a",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+   "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+   "@openzeppelin/contracts/utils/Address.sol",
+   "@openzeppelin/contracts/utils/Context.sol",
+   "@openzeppelin/contracts/utils/Strings.sol",
+   "@openzeppelin/contracts/utils/introspection/ERC165.sol"
+  ]
+ },
+ "lens-protocol/contracts/core/base/IERC721Time.sol": {
+  "bytes": 1689,
+  "pragma": "^0.8.0",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "0426cf6702780d347eb352f1c74e3ffa516b51db",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC721/IERC721.sol"
+  ]
+ },
+ "lens-protocol/contracts/core/base/LensMultiState.sol": {
+  "bytes": 1438,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "b98957fa6454b9379fc6c1d29f4df7f105a41916",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/core/base/LensNFTBase.sol": {
+  "bytes": 6358,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "2d051bd0cb268f4d7c7e3af07747c77e839b32ef",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/core/modules/FeeModuleBase.sol": {
+  "bytes": 1550,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "dependency",
+  "sha1": "2f9f85a690ceee55d1655fe75ec63ba283bb11eb",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/core/modules/FollowValidationModuleBase.sol": {
+  "bytes": 1350,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "dependency",
+  "sha1": "06c05dcaac13d531694469143914ab69a066bd45",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC721/IERC721.sol"
+  ]
+ },
+ "lens-protocol/contracts/core/modules/ModuleBase.sol": {
+  "bytes": 696,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "dependency",
+  "sha1": "5a12301b6cd74dfbf61603222f910f91bf4a75de",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/core/modules/ModuleGlobals.sol": {
+  "bytes": 4375,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "250ab581cefec5afe51d9fa29833dd2206d5a244",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/core/modules/collect/EmptyCollectModule.sol": {
+  "bytes": 1265,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "97ea27b9d0fb5f2738d887afdf13689736b5f195",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/core/modules/collect/FeeCollectModule.sol": {
+  "bytes": 7154,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "6a04aadfa52bd95447c35c0f0426b538b518fb86",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+   "@openzeppelin/contracts/token/ERC721/IERC721.sol"
+  ]
+ },
+ "lens-protocol/contracts/core/modules/collect/LimitedFeeCollectModule.sol": {
+  "bytes": 7841,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "adc252a39c340d6fe959f6b43b427d6e5dc80aab",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+   "@openzeppelin/contracts/token/ERC721/IERC721.sol"
+  ]
+ },
+ "lens-protocol/contracts/core/modules/collect/LimitedTimedFeeCollectModule.sol": {
+  "bytes": 8651,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "92d6025439a827e6f871f93061c10cdb2fbdc6a2",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+   "@openzeppelin/contracts/token/ERC721/IERC721.sol"
+  ]
+ },
+ "lens-protocol/contracts/core/modules/collect/RevertCollectModule.sol": {
+  "bytes": 1081,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "7f489520eef69021cf6ff5bb0e3a3d3a24833ee0",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/core/modules/collect/TimedFeeCollectModule.sol": {
+  "bytes": 7975,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "2a6776174ae289fbe14a57082fcec847638af114",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+   "@openzeppelin/contracts/token/ERC721/IERC721.sol"
+  ]
+ },
+ "lens-protocol/contracts/core/modules/follow/ApprovalFollowModule.sol": {
+  "bytes": 5052,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "7c8fc2edcbb7625a5e91c30882be841c76eaf14f",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC721/IERC721.sol"
+  ]
+ },
+ "lens-protocol/contracts/core/modules/follow/FeeFollowModule.sol": {
+  "bytes": 4307,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "cb4d32e0d64cf47baeda0deeb1cd84dd36045448",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+   "@openzeppelin/contracts/token/ERC721/IERC721.sol"
+  ]
+ },
+ "lens-protocol/contracts/core/modules/follow/FollowValidatorFollowModuleBase.sol": {
+  "bytes": 1533,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "f398e13d2a1529b03795dffd2e3d3f6d973ce423",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC721/IERC721.sol"
+  ]
+ },
+ "lens-protocol/contracts/core/modules/reference/FollowerOnlyReferenceModule.sol": {
+  "bytes": 1886,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "247e3a150cb4b524cb97902c921d6eda784331b2",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC721/IERC721.sol"
+  ]
+ },
+ "lens-protocol/contracts/core/storage/LensHubStorage.sol": {
+  "bytes": 3828,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "dependency",
+  "sha1": "a6ff35b80c4f92081c0d68fb33084b0831e6336a",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/interfaces/ICollectModule.sol": {
+  "bytes": 1726,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "260a5563b1ab387c97573b7ecd70854dd7857d8f",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/interfaces/ICollectNFT.sol": {
+  "bytes": 1452,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "75f9792e986b8e82235701fd972127e4cd454c9c",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/interfaces/IFollowModule.sol": {
+  "bytes": 3326,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "98824e24cd2c0018c8afbb91756ff3cd0a81eb08",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/interfaces/IFollowNFT.sol": {
+  "bytes": 2233,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "ee609eee5bf26a8fb6776c4b816238572e9722b2",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/interfaces/ILensHub.sol": {
+  "bytes": 19768,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "9039722e1600750095545901cc1c3957c9ee7b1d",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/interfaces/ILensNFTBase.sol": {
+  "bytes": 2408,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "9859870701bed9755d893a1d5bf12d41edc4bfb8",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/interfaces/IModuleGlobals.sol": {
+  "bytes": 2495,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "b72db95e804ddaf99873affbd6979b16a52ab971",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/interfaces/IReferenceModule.sol": {
+  "bytes": 2069,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "5b256b616a1037c9e58f727856edd189cb04bed9",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/libraries/Constants.sol": {
+  "bytes": 403,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "dependency",
+  "sha1": "98e537d8486bc49c8f1c2c63e633466574c01daa",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/libraries/DataTypes.sol": {
+  "bytes": 14057,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "dependency",
+  "sha1": "ac16948528cf74ea7f9e91cadbd6a5a83e801c82",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/libraries/Errors.sol": {
+  "bytes": 1263,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "dependency",
+  "sha1": "b163708ca236d994870a86ae8beee5f3209dfbaf",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/libraries/Events.sol": {
+  "bytes": 18317,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "72f316ab1ba552d867db536cb1330d4ca13539e7",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/libraries/Helpers.sol": {
+  "bytes": 2136,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "4bccff864bd5453e6f99010f40f0ddd3b8c2e283",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/libraries/InteractionLogic.sol": {
+  "bytes": 6392,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "3adcf35c22fa32eaed286ef5ee006d3fe31ffed5",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/proxy/Clones.sol",
+   "@openzeppelin/contracts/utils/Strings.sol"
+  ]
+ },
+ "lens-protocol/contracts/libraries/PublishingLogic.sol": {
+  "bytes": 16562,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "f9748940127f1b689fa9c0376959fd22e11fa494",
+  "unresolved_imports": []
+ },
+ "lens-protocol/contracts/upgradeability/VersionedInitializable.sol": {
+  "bytes": 1955,
+  "pragma": "0.8.10",
+  "project": "lens-protocol",
+  "role": "scored",
+  "sha1": "df573a9b50e657b34b95c49ea4bca46fa6f4543a",
+  "unresolved_imports": []
+ },
+ "notional/ERC1155Token.sol": {
+  "bytes": 5537,
+  "pragma": "^0.6.0",
+  "project": "notional",
+  "role": "scored",
+  "sha1": "0dea593dd038b7ca7aee48ce8ef429ca577fc9fc",
+  "unresolved_imports": [
+   "./CashMarket.sol",
+   "./interface/IERC1155TokenReceiver.sol",
+   "./utils/Common.sol",
+   "./utils/ERC1155Base.sol"
+  ]
+ },
+ "notional/Escrow.sol": {
+  "bytes": 48599,
+  "pragma": "^0.6.0",
+  "project": "notional",
+  "role": "scored",
+  "sha1": "9185a7edd4b8c5f63ec3610c69491f8b9e47b9d4",
+  "unresolved_imports": [
+   "./interface/IAggregator.sol",
+   "./interface/IERC1820Registry.sol",
+   "./interface/IERC20.sol",
+   "./interface/IERC777.sol",
+   "./interface/IERC777Recipient.sol",
+   "./interface/IEscrowCallable.sol",
+   "./interface/IWETH.sol",
+   "./lib/SafeERC20.sol",
+   "./lib/SafeInt256.sol",
+   "./lib/SafeMath.sol",
+   "./lib/SafeUInt128.sol",
+   "./storage/EscrowStorage.sol",
+   "./utils/Governed.sol",
+   "./utils/Liquidation.sol",
+   "@openzeppelin/contracts/utils/SafeCast.sol"
+  ]
+ },
+ "notional/EscrowStorage.sol": {
+  "bytes": 4524,
+  "pragma": "^0.6.0",
+  "project": "notional",
+  "role": "scored",
+  "sha1": "3d1cf44ae6b635dca7dbac32c5c8a993e8eccd8c",
+  "unresolved_imports": [
+   "../utils/ExchangeRate.sol",
+   "./StorageSlot.sol"
+  ]
+ },
+ "notional/ExchangeRate.sol": {
+  "bytes": 4608,
+  "pragma": "^0.6.0",
+  "project": "notional",
+  "role": "scored",
+  "sha1": "3df4a4dc2052d3c6f51055199b383885dce674c9",
+  "unresolved_imports": [
+   "../interface/IAggregator.sol",
+   "../lib/SafeInt256.sol",
+   "../lib/SafeMath.sol",
+   "../utils/Common.sol",
+   "@openzeppelin/contracts/utils/SafeCast.sol"
+  ]
+ },
+ "notional/Liquidation.sol": {
+  "bytes": 32174,
+  "pragma": "^0.6.4",
+  "project": "notional",
+  "role": "scored",
+  "sha1": "77746724378f6897fc88b2895a298f57b4b30bf8",
+  "unresolved_imports": [
+   "../interface/IPortfoliosCallable.sol",
+   "../lib/SafeInt256.sol",
+   "../lib/SafeMath.sol",
+   "../lib/SafeUInt128.sol",
+   "../storage/EscrowStorage.sol",
+   "./Common.sol",
+   "@openzeppelin/contracts/utils/SafeCast.sol"
+  ]
+ },
+ "notional/Ownable.sol": {
+  "bytes": 2601,
+  "pragma": "^0.6.0",
+  "project": "notional",
+  "role": "scored",
+  "sha1": "4c72bc22afecc48e29ea12780161209ad618e513",
+  "unresolved_imports": []
+ },
+ "notional/RiskFramework.sol": {
+  "bytes": 10775,
+  "pragma": "^0.6.0",
+  "project": "notional",
+  "role": "scored",
+  "sha1": "a803a06b9f919e1ff0d452b84cc852f132327071",
+  "unresolved_imports": [
+   "../CashMarket.sol",
+   "../interface/IPortfoliosCallable.sol",
+   "../lib/SafeInt256.sol",
+   "../lib/SafeMath.sol",
+   "../storage/PortfoliosStorage.sol",
+   "../utils/Common.sol",
+   "../utils/Governed.sol",
+   "@openzeppelin/contracts/utils/SafeCast.sol"
+  ]
+ },
+ "opyn-gamma/contracts/core/AddressBook.sol": {
+  "bytes": 6972,
+  "pragma": "=0.6.10",
+  "project": "opyn-gamma",
+  "role": "scored",
+  "sha1": "b99fbdf9f548e4ca5f04e155090011a7716e309a",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/core/Controller.sol": {
+  "bytes": 40707,
+  "pragma": "=0.6.10",
+  "project": "opyn-gamma",
+  "role": "scored",
+  "sha1": "78fe44b029d028fc65445670517aa5b79030eaf7",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/core/MarginCalculator.sol": {
+  "bytes": 51540,
+  "pragma": "=0.6.10",
+  "project": "opyn-gamma",
+  "role": "scored",
+  "sha1": "07676a98a40cc8289bf483ff7e4fa0eaab5e6072",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/core/MarginPool.sol": {
+  "bytes": 6709,
+  "pragma": "=0.6.10",
+  "project": "opyn-gamma",
+  "role": "scored",
+  "sha1": "9f98e5150051badf0a36dd5bfd3cabdf3ecf801a",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/core/Oracle.sol": {
+  "bytes": 12286,
+  "pragma": "=0.6.10",
+  "project": "opyn-gamma",
+  "role": "scored",
+  "sha1": "66973661069e3c985754f4c976dbaab4125aaf76",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/core/Otoken.sol": {
+  "bytes": 9993,
+  "pragma": "=0.6.10",
+  "project": "opyn-gamma",
+  "role": "scored",
+  "sha1": "8e10c8069e4dc8dfeea9d58758bc72f29122b2be",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/core/OtokenFactory.sol": {
+  "bytes": 7982,
+  "pragma": "=0.6.10",
+  "project": "opyn-gamma",
+  "role": "scored",
+  "sha1": "a941a43b147eaffa5a92e441d657a9e951d9da40",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/core/OtokenSpawner.sol": {
+  "bytes": 2680,
+  "pragma": "=0.6.10",
+  "project": "opyn-gamma",
+  "role": "scored",
+  "sha1": "bab114a27fa6e70e63934c575675f417da9bbc8e",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/core/Whitelist.sol": {
+  "bytes": 9069,
+  "pragma": "=0.6.10",
+  "project": "opyn-gamma",
+  "role": "scored",
+  "sha1": "814cb49b8520b3dae91f13d88e30f83f881ee945",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/interfaces/AddressBookInterface.sol": {
+  "bytes": 1281,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "518b3f743bda8aeb7942c54b279d381c45ab8ea1",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/interfaces/AggregatorInterface.sol": {
+  "bytes": 1054,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "dff31acdf964444f4554bc50eb3a717566cda95b",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/interfaces/CTokenInterface.sol": {
+  "bytes": 421,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "scored",
+  "sha1": "66e81c6a9a366e74a7d7469d98a794e84ce712b6",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/interfaces/CalleeInterface.sol": {
+  "bytes": 451,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "scored",
+  "sha1": "e0dc8c0f0423110011ae5754601e68acd337f899",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/interfaces/ERC20Interface.sol": {
+  "bytes": 2804,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "scored",
+  "sha1": "9ec6505dc3386fcca59fb07ffb1e7d3de3607716",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/interfaces/MarginCalculatorInterface.sol": {
+  "bytes": 792,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "d41ff9d8f6a9d9e2e644671f514d632bd12bffe0",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/interfaces/MarginPoolInterface.sol": {
+  "bytes": 1085,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "634b55059efc8071c8419d4c8383a6f128728d63",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/interfaces/OpynPricerInterface.sol": {
+  "bytes": 247,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "d941acf4aaa7b540778ac9c44efc25e85c27a940",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/interfaces/OracleInterface.sol": {
+  "bytes": 1481,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "72e147d7a5465cc162e8222508b37ee01a7cc33a",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/interfaces/OtokenInterface.sol": {
+  "bytes": 1112,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "a5a04f8d810cdea3c89a86ca795cb2406e6dba1d",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/interfaces/WhitelistInterface.sol": {
+  "bytes": 1310,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "f5a7c5f622d8f7883d4a0c44079c27c76929b3d7",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/interfaces/YearnVaultInterface.sol": {
+  "bytes": 414,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "2c98cd74ebe0a2883a1c8acc6f122378a322086e",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/libs/Actions.sol": {
+  "bytes": 13107,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "scored",
+  "sha1": "8639a7bcda1d091fb90be3975220e152a3b73e05",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/libs/FixedPointInt256.sol": {
+  "bytes": 6926,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "scored",
+  "sha1": "f09b1500570320d33a0e6557a7f48a74152ba6cf",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/libs/MarginVault.sol": {
+  "bytes": 9819,
+  "pragma": "=0.6.10",
+  "project": "opyn-gamma",
+  "role": "scored",
+  "sha1": "491535b6f6918128f1df52ddbfb044b03f165628",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/libs/SignedConverter.sol": {
+  "bytes": 966,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "scored",
+  "sha1": "050e0db5812019bc013ad943b4a1cde422a4c504",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/packages/BokkyPooBahsDateTimeLibrary.sol": {
+  "bytes": 2852,
+  "pragma": "^0.6.0",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "0ecc99827df5028a2cf7d1d98629cc2330680286",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/packages/Spawn.sol": {
+  "bytes": 1344,
+  "pragma": "=0.6.10",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "ff06460869f5273246c9e2fae9cba05cc10885c1",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/packages/oz/Create2.sol": {
+  "bytes": 2500,
+  "pragma": "=0.6.10",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "9c271e4736038581420712624b16f8e8840dfb44",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/packages/oz/Ownable.sol": {
+  "bytes": 2221,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "2cc13a8d447d073df8856833d383d2054c13df93",
+  "unresolved_imports": [
+   "./Context.sol"
+  ]
+ },
+ "opyn-gamma/contracts/packages/oz/SafeERC20.sol": {
+  "bytes": 4019,
+  "pragma": "^0.6.0",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "6fb565d0472be8ca4ae7d243dce8c75d537066fb",
+  "unresolved_imports": [
+   "./Address.sol"
+  ]
+ },
+ "opyn-gamma/contracts/packages/oz/SafeMath.sol": {
+  "bytes": 5322,
+  "pragma": "^0.6.0",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "3e984ab663a54146c5b87570ac9210c198320468",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/packages/oz/SignedSafeMath.sol": {
+  "bytes": 2680,
+  "pragma": "^0.6.0",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "e022fefcd1c8d8283d60ba7f17ea7395bed947b5",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/packages/oz/Strings.sol": {
+  "bytes": 954,
+  "pragma": "=0.6.10",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "e39e378717487eec478a7d036dc59724e22ab3cc",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/packages/oz/upgradeability/ERC20Upgradeable.sol": {
+  "bytes": 11317,
+  "pragma": ">=0.6.0 <0.8.0",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "63ddfac1f397c0a9a2089db8d292a81d98e03a98",
+  "unresolved_imports": [
+   "./GSN/ContextUpgradeable.sol",
+   "./IERC20Upgradeable.sol",
+   "./math/SafeMathUpgradeable.sol"
+  ]
+ },
+ "opyn-gamma/contracts/packages/oz/upgradeability/Initializable.sol": {
+  "bytes": 2205,
+  "pragma": ">=0.4.24 <0.7.0",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "227efd84c026f0d028dfaafea17dd672c67f9ffb",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/packages/oz/upgradeability/OwnableUpgradeSafe.sol": {
+  "bytes": 2492,
+  "pragma": "^0.6.0",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "ddac4e6cde0e090cca3b53265f355827ea7e28ad",
+  "unresolved_imports": [
+   "./GSN/ContextUpgradeable.sol"
+  ]
+ },
+ "opyn-gamma/contracts/packages/oz/upgradeability/OwnedUpgradeabilityProxy.sol": {
+  "bytes": 3151,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "015697508f24756fda429dac35db5300cd1d6ffd",
+  "unresolved_imports": [
+   "./UpgradeabilityProxy.sol"
+  ]
+ },
+ "opyn-gamma/contracts/packages/oz/upgradeability/ReentrancyGuardUpgradeSafe.sol": {
+  "bytes": 2397,
+  "pragma": "^0.6.0",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "b8d7606be516101eb5f7e205755174fd74b6f598",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/packages/oz/upgradeability/erc20-permit/ERC20PermitUpgradeable.sol": {
+  "bytes": 3086,
+  "pragma": ">=0.6.5 <0.8.0",
+  "project": "opyn-gamma",
+  "role": "dependency",
+  "sha1": "6a9de9ea515adf563e93ed7e00f971b4d705bb60",
+  "unresolved_imports": [
+   "../cryptography/ECDSAUpgradeable.sol",
+   "../utils/CountersUpgradeable.sol",
+   "./EIP712Upgradeable.sol",
+   "./IERC20PermitUpgradeable.sol"
+  ]
+ },
+ "opyn-gamma/contracts/pricers/ChainlinkPricer.sol": {
+  "bytes": 4256,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "scored",
+  "sha1": "4b921b51d2edecc1d02cfb5f5be9aea787e5174f",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/pricers/CompoundPricer.sol": {
+  "bytes": 3123,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "scored",
+  "sha1": "e77e141314085b34aadea0388206ee48ec13ce90",
+  "unresolved_imports": []
+ },
+ "opyn-gamma/contracts/pricers/YearnPricer.sol": {
+  "bytes": 3555,
+  "pragma": "0.6.10",
+  "project": "opyn-gamma",
+  "role": "scored",
+  "sha1": "d5c32df877a0bb855b16f8e0a2b632c718c1b5ec",
+  "unresolved_imports": []
+ },
+ "perp-v2-oracle/contracts/BandPriceFeed.sol": {
+  "bytes": 8499,
+  "pragma": "0.7.6",
+  "project": "perp-v2-oracle",
+  "role": "scored",
+  "sha1": "a0a5a222a502e930fa160184e3f0fc746d9f4fb2",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/utils/Address.sol"
+  ]
+ },
+ "perp-v2-oracle/contracts/EmergencyPriceFeed.sol": {
+  "bytes": 3161,
+  "pragma": "0.7.6",
+  "project": "perp-v2-oracle",
+  "role": "scored",
+  "sha1": "d84ade341eaf1eed2fc8500cd26fc447849598b4",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/utils/Address.sol",
+   "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol",
+   "@uniswap/v3-core/contracts/libraries/FixedPoint96.sol",
+   "@uniswap/v3-core/contracts/libraries/FullMath.sol",
+   "@uniswap/v3-core/contracts/libraries/TickMath.sol"
+  ]
+ },
+ "perp-v2-oracle/contracts/base/BlockContext.sol": {
+  "bytes": 511,
+  "pragma": "0.7.6",
+  "project": "perp-v2-oracle",
+  "role": "dependency",
+  "sha1": "9a50d28221bd4e93f7c2ecf3da3ae59d57a66470",
+  "unresolved_imports": []
+ },
+ "perp-v2-oracle/contracts/interface/IPriceFeed.sol": {
+  "bytes": 332,
+  "pragma": "0.7.6",
+  "project": "perp-v2-oracle",
+  "role": "scored",
+  "sha1": "3a2c4ea64326675c643b1fa4842d4e9d78d045ab",
+  "unresolved_imports": []
+ },
+ "perp-v2-oracle/contracts/interface/bandProtocol/IStdReference.sol": {
+  "bytes": 1057,
+  "pragma": "0.7.6",
+  "project": "perp-v2-oracle",
+  "role": "scored",
+  "sha1": "891988a9d7b6d9149081235e914308c22708381b",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/PrimitiveEngine.sol": {
+  "bytes": 17390,
+  "pragma": "0.8.6",
+  "project": "primitive-rmm",
+  "role": "scored",
+  "sha1": "4b25d4b6f8ee821c0bd1dff509dd293f3b89ccfe",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/PrimitiveFactory.sol": {
+  "bytes": 4256,
+  "pragma": "0.8.6",
+  "project": "primitive-rmm",
+  "role": "scored",
+  "sha1": "f055196c7317c7df14b45d31adecfb3d709b714a",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/interfaces/IERC20.sol": {
+  "bytes": 825,
+  "pragma": ">=0.5.0",
+  "project": "primitive-rmm",
+  "role": "dependency",
+  "sha1": "66651b1f2b43ecfa9163b8e622ae3ef8974aab3c",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/interfaces/IPrimitiveEngine.sol": {
+  "bytes": 434,
+  "pragma": ">=0.8.4",
+  "project": "primitive-rmm",
+  "role": "dependency",
+  "sha1": "2ff3eb8c5a7cea3dfbe6dd000239e89aa3526e57",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/interfaces/IPrimitiveFactory.sol": {
+  "bytes": 2831,
+  "pragma": ">=0.8.4",
+  "project": "primitive-rmm",
+  "role": "scored",
+  "sha1": "3aaa4a095679e9145ffded810a590a1621b30d76",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/interfaces/callback/IPrimitiveCreateCallback.sol": {
+  "bytes": 619,
+  "pragma": ">=0.5.0",
+  "project": "primitive-rmm",
+  "role": "scored",
+  "sha1": "1d54ac47c1f42897137678871dc5b9d6afb65f0e",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/interfaces/callback/IPrimitiveDepositCallback.sol": {
+  "bytes": 634,
+  "pragma": ">=0.5.0",
+  "project": "primitive-rmm",
+  "role": "scored",
+  "sha1": "b4fb47b2ea9024d8339171614bb1a1e5984e4cfa",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/interfaces/callback/IPrimitiveLiquidityCallback.sol": {
+  "bytes": 628,
+  "pragma": ">=0.5.0",
+  "project": "primitive-rmm",
+  "role": "scored",
+  "sha1": "cae06a88b6ae7d3b4696cee864ef4293bc042bd8",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/interfaces/callback/IPrimitiveSwapCallback.sol": {
+  "bytes": 591,
+  "pragma": ">=0.5.0",
+  "project": "primitive-rmm",
+  "role": "scored",
+  "sha1": "49cb013cff73298ed185a34a53a0fdd9140c4d56",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/interfaces/engine/IPrimitiveEngineActions.sol": {
+  "bytes": 5311,
+  "pragma": ">=0.5.0",
+  "project": "primitive-rmm",
+  "role": "scored",
+  "sha1": "5fe851ab3ced71cb3dd6c2f827dafaff104d296c",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/interfaces/engine/IPrimitiveEngineErrors.sol": {
+  "bytes": 2744,
+  "pragma": ">=0.8.4",
+  "project": "primitive-rmm",
+  "role": "scored",
+  "sha1": "7aa7801d972aad2ff6ad71004b7e216bf3c747b1",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/interfaces/engine/IPrimitiveEngineEvents.sol": {
+  "bytes": 3571,
+  "pragma": ">=0.5.0",
+  "project": "primitive-rmm",
+  "role": "scored",
+  "sha1": "c18cd39c4c8c57aefd7e7e5df4bd66c096eaf524",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/interfaces/engine/IPrimitiveEngineView.sol": {
+  "bytes": 4288,
+  "pragma": ">=0.5.0",
+  "project": "primitive-rmm",
+  "role": "scored",
+  "sha1": "dcc138dff6e121b7f49a7b2660dae454c1edd936",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/libraries/ABDKMath64x64.sol": {
+  "bytes": 29117,
+  "pragma": "^0.8.0",
+  "project": "primitive-rmm",
+  "role": "scored",
+  "sha1": "063bea902fb4751002d70cec3df0e59a9d2ffe71",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/libraries/CumulativeNormalDistribution.sol": {
+  "bytes": 4668,
+  "pragma": "^0.8.4",
+  "project": "primitive-rmm",
+  "role": "scored",
+  "sha1": "7bf80bc9151fe02f083358a72a8b96e9ba225411",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/libraries/Margin.sol": {
+  "bytes": 1795,
+  "pragma": ">=0.8.0",
+  "project": "primitive-rmm",
+  "role": "scored",
+  "sha1": "4660b5d2a47baf1fba8c663018249a1096374ea3",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/libraries/ReplicationMath.sol": {
+  "bytes": 6505,
+  "pragma": "^0.8.4",
+  "project": "primitive-rmm",
+  "role": "scored",
+  "sha1": "15068bebddbcafd96276d443eb53d2aa5a88052b",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/libraries/Reserve.sol": {
+  "bytes": 5274,
+  "pragma": ">=0.8.0",
+  "project": "primitive-rmm",
+  "role": "scored",
+  "sha1": "4fc15c3fa975861964a2298873bfb6691a8ba32c",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/libraries/SafeCast.sol": {
+  "bytes": 351,
+  "pragma": ">=0.5.0",
+  "project": "primitive-rmm",
+  "role": "scored",
+  "sha1": "b2099994db6c43aed898e8b39b64a624deeeeb65",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/libraries/Transfers.sol": {
+  "bytes": 807,
+  "pragma": ">=0.6.0",
+  "project": "primitive-rmm",
+  "role": "scored",
+  "sha1": "e0472786e221efdeac662dbbeaf10197eaa28859",
+  "unresolved_imports": []
+ },
+ "primitive-rmm/contracts/libraries/Units.sol": {
+  "bytes": 4059,
+  "pragma": "^0.8.0",
+  "project": "primitive-rmm",
+  "role": "scored",
+  "sha1": "f409cd207378f89c960d3ca8c77307991eaca446",
+  "unresolved_imports": []
+ },
+ "ribbon-v2/contracts/interfaces/GammaInterface.sol": {
+  "bytes": 4912,
+  "pragma": ">=0.7.2",
+  "project": "ribbon-v2",
+  "role": "dependency",
+  "sha1": "b64840c7fd0394b571e2065eb44dedc530aaf043",
+  "unresolved_imports": []
+ },
+ "ribbon-v2/contracts/interfaces/IERC20Detailed.sol": {
+  "bytes": 287,
+  "pragma": "^0.7.3",
+  "project": "ribbon-v2",
+  "role": "dependency",
+  "sha1": "bcb6ea505a790343e7177125d1698445f332fffc",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "ribbon-v2/contracts/interfaces/IGnosisAuction.sol": {
+  "bytes": 2244,
+  "pragma": "^0.7.3",
+  "project": "ribbon-v2",
+  "role": "dependency",
+  "sha1": "807561eac5466e15314ea0850f4a397c23bc91d9",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "ribbon-v2/contracts/interfaces/IRibbon.sol": {
+  "bytes": 880,
+  "pragma": "^0.7.3",
+  "project": "ribbon-v2",
+  "role": "dependency",
+  "sha1": "177d32534d043ac2b00b773f1f758f46a54f89b2",
+  "unresolved_imports": []
+ },
+ "ribbon-v2/contracts/interfaces/IRibbonThetaVault.sol": {
+  "bytes": 2152,
+  "pragma": "^0.7.3",
+  "project": "ribbon-v2",
+  "role": "dependency",
+  "sha1": "8cc73ea9ec307ca0ed2ed3c48046d4a5063a2fa2",
+  "unresolved_imports": []
+ },
+ "ribbon-v2/contracts/interfaces/IWETH.sol": {
+  "bytes": 660,
+  "pragma": ">=0.7.2",
+  "project": "ribbon-v2",
+  "role": "dependency",
+  "sha1": "5940508076941d391966d5d553114d51fcc4cef0",
+  "unresolved_imports": []
+ },
+ "ribbon-v2/contracts/libraries/GnosisAuction.sol": {
+  "bytes": 8784,
+  "pragma": "^0.7.3",
+  "project": "ribbon-v2",
+  "role": "dependency",
+  "sha1": "f294b411cf70d2aff726f1fbf5b0e46ae653e13b",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/math/SafeMath.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/token/ERC20/SafeERC20.sol"
+  ]
+ },
+ "ribbon-v2/contracts/libraries/ShareMath.sol": {
+  "bytes": 3191,
+  "pragma": "^0.7.3",
+  "project": "ribbon-v2",
+  "role": "scored",
+  "sha1": "39669f7289350d22f4dbf3f334d17e44b7b1459a",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/math/SafeMath.sol"
+  ]
+ },
+ "ribbon-v2/contracts/libraries/SupportsNonCompliantERC20.sol": {
+  "bytes": 592,
+  "pragma": "^0.7.3",
+  "project": "ribbon-v2",
+  "role": "dependency",
+  "sha1": "0c2f73ff62aa86e77a5098649cbc31644ab3a66c",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/token/ERC20/SafeERC20.sol"
+  ]
+ },
+ "ribbon-v2/contracts/libraries/Vault.sol": {
+  "bytes": 2525,
+  "pragma": "^0.7.3",
+  "project": "ribbon-v2",
+  "role": "dependency",
+  "sha1": "caa7ddc68c062b734bcab2ca8ccac64ed31d306b",
+  "unresolved_imports": []
+ },
+ "ribbon-v2/contracts/libraries/VaultLifecycle.sol": {
+  "bytes": 18251,
+  "pragma": "^0.7.3",
+  "project": "ribbon-v2",
+  "role": "scored",
+  "sha1": "f04adc8669f8ae03cc7f27cb0fb4748f40afe3aa",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/math/SafeMath.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/token/ERC20/SafeERC20.sol"
+  ]
+ },
+ "ribbon-v2/contracts/storage/OptionsVaultStorage.sol": {
+  "bytes": 3107,
+  "pragma": ">=0.7.2",
+  "project": "ribbon-v2",
+  "role": "dependency",
+  "sha1": "3dc3b7e426b6490c1a5fac5a4366ae025ca10e6c",
+  "unresolved_imports": [
+   "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
+   "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol"
+  ]
+ },
+ "ribbon-v2/contracts/utils/StrikeSelection.sol": {
+  "bytes": 7444,
+  "pragma": "^0.7.3",
+  "project": "ribbon-v2",
+  "role": "scored",
+  "sha1": "7842282dcea79cc4363ae81006fafce7aeb79e1f",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/access/Ownable.sol",
+   "@openzeppelin/contracts/math/SafeMath.sol",
+   "@ribbon-finance/rvol/contracts/interfaces/IPriceOracle.sol",
+   "@ribbon-finance/rvol/contracts/interfaces/IVolatilityOracle.sol"
+  ]
+ },
+ "ribbon-v2/contracts/vaults/RibbonDeltaVault.sol": {
+  "bytes": 11868,
+  "pragma": "^0.7.3",
+  "project": "ribbon-v2",
+  "role": "scored",
+  "sha1": "301512a340c822f84054f11d90c0a484fff016d9",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/math/SafeMath.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/token/ERC20/SafeERC20.sol"
+  ]
+ },
+ "ribbon-v2/contracts/vaults/RibbonThetaVault.sol": {
+  "bytes": 10822,
+  "pragma": "^0.7.3",
+  "project": "ribbon-v2",
+  "role": "scored",
+  "sha1": "a7b42df2bde708c9bf444d9db2a5b541ecdc44e3",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/math/SafeMath.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/token/ERC20/SafeERC20.sol"
+  ]
+ },
+ "ribbon-v2/contracts/vaults/base/RibbonVault.sol": {
+  "bytes": 24234,
+  "pragma": "^0.7.3",
+  "project": "ribbon-v2",
+  "role": "scored",
+  "sha1": "316a3c415f107282c8dfbc03144c0f80f4d41e92",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/math/SafeMath.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+   "@openzeppelin/contracts/token/ERC20/SafeERC20.sol"
+  ]
+ },
+ "ribbon-v2/contracts/vendor/DSMath.sol": {
+  "bytes": 3212,
+  "pragma": ">0.4.13",
+  "project": "ribbon-v2",
+  "role": "dependency",
+  "sha1": "5dca1d3c692fb23a5833e4818d82a6688e7aadc4",
+  "unresolved_imports": []
+ },
+ "seaport/contracts/Consideration.sol": {
+  "bytes": 38912,
+  "pragma": "0.8.13",
+  "project": "seaport",
+  "role": "scored",
+  "sha1": "81a59d151fcadafbc7cc690524d8d6b41029c837",
+  "unresolved_imports": []
+ },
+ "seaport/contracts/interfaces/AbridgedProxyInterfaces.sol": {
+  "bytes": 572,
+  "pragma": "0.8.13",
+  "project": "seaport",
+  "role": "dependency",
+  "sha1": "45182e7f27e2348a1062bbc635b78506886e5b8d",
+  "unresolved_imports": []
+ },
+ "seaport/contracts/interfaces/AbridgedTokenInterfaces.sol": {
+  "bytes": 702,
+  "pragma": "0.8.13",
+  "project": "seaport",
+  "role": "dependency",
+  "sha1": "b9d16848e966057a74e5221382aa956b9467e8e8",
+  "unresolved_imports": []
+ },
+ "seaport/contracts/interfaces/ConsiderationEventsAndErrors.sol": {
+  "bytes": 12820,
+  "pragma": "0.8.13",
+  "project": "seaport",
+  "role": "scored",
+  "sha1": "c83cec99b4171585996f3496a370ed1d47b35b43",
+  "unresolved_imports": []
+ },
+ "seaport/contracts/interfaces/ConsiderationInterface.sol": {
+  "bytes": 18674,
+  "pragma": "0.8.13",
+  "project": "seaport",
+  "role": "scored",
+  "sha1": "5fdeb36ef898d6c0b242bdf03bac4ea1b62a7091",
+  "unresolved_imports": []
+ },
+ "seaport/contracts/interfaces/EIP1271Interface.sol": {
+  "bytes": 216,
+  "pragma": "0.8.13",
+  "project": "seaport",
+  "role": "dependency",
+  "sha1": "07562b30c152acd5ffca7757e28d02c465317dfb",
+  "unresolved_imports": []
+ },
+ "seaport/contracts/interfaces/ZoneInterface.sol": {
+  "bytes": 738,
+  "pragma": "0.8.13",
+  "project": "seaport",
+  "role": "dependency",
+  "sha1": "1471d04f7d18fe2eae00bf98ca789f2a952116b4",
+  "unresolved_imports": []
+ },
+ "seaport/contracts/lib/ConsiderationBase.sol": {
+  "bytes": 6525,
+  "pragma": "0.8.13",
+  "project": "seaport",
+  "role": "dependency",
+  "sha1": "41e5cc0ab649d4cda09fe200cf1392dd5c73d6c3",
+  "unresolved_imports": []
+ },
+ "seaport/contracts/lib/ConsiderationConstants.sol": {
+  "bytes": 12976,
+  "pragma": "0.8.13",
+  "project": "seaport",
+  "role": "dependency",
+  "sha1": "e998c0948c84d210416afb49a9548b5f1d0e01c2",
+  "unresolved_imports": []
+ },
+ "seaport/contracts/lib/ConsiderationEnums.sol": {
+  "bytes": 3881,
+  "pragma": "0.8.13",
+  "project": "seaport",
+  "role": "dependency",
+  "sha1": "b5779b4401ed1fcdce91c6e2ed0df65483bd14d2",
+  "unresolved_imports": []
+ },
+ "seaport/contracts/lib/ConsiderationInternal.sol": {
+  "bytes": 108466,
+  "pragma": "0.8.13",
+  "project": "seaport",
+  "role": "dependency",
+  "sha1": "21a295effc514e2b23af838c9779176ac660d6b7",
+  "unresolved_imports": []
+ },
+ "seaport/contracts/lib/ConsiderationInternalView.sol": {
+  "bytes": 45363,
+  "pragma": "0.8.13",
+  "project": "seaport",
+  "role": "dependency",
+  "sha1": "6e0d25589fc3777fc1b251a3400487ee2d0c0d36",
+  "unresolved_imports": []
+ },
+ "seaport/contracts/lib/ConsiderationPure.sol": {
+  "bytes": 58287,
+  "pragma": "0.8.13",
+  "project": "seaport",
+  "role": "dependency",
+  "sha1": "42f50b0bcf12d4268f37a367655c5d8a43d18895",
+  "unresolved_imports": []
+ },
+ "seaport/contracts/lib/ConsiderationStructs.sol": {
+  "bytes": 8936,
+  "pragma": "0.8.13",
+  "project": "seaport",
+  "role": "dependency",
+  "sha1": "f76a64941fbcf5b77bd5140b35fe1fea7c00de5f",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/NoDelegateCall.sol": {
+  "bytes": 1081,
+  "pragma": "=0.7.6",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "9ef7397ae9c98cb90e50846579e3e513b8212d2d",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/UniswapV3Factory.sol": {
+  "bytes": 2850,
+  "pragma": "=0.7.6",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "8f5698ca1de25791e7667422907be59d640904a8",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/UniswapV3Pool.sol": {
+  "bytes": 30814,
+  "pragma": "=0.7.6",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "ed457514045115ab4c2e5399f601c53bfc7587ea",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/UniswapV3PoolDeployer.sol": {
+  "bytes": 1034,
+  "pragma": "=0.7.6",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "7f0316cf419db9936fa8f93fbd293c1dee6c5500",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/interfaces/IERC20Minimal.sol": {
+  "bytes": 3068,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "3f014474a6ecd624ab108478d61cb02d71e9b0e3",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/interfaces/IUniswapV3Factory.sol": {
+  "bytes": 3695,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "be272e83a99bfde6964eb48b55dd9d91f11d3ff4",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/interfaces/IUniswapV3Pool.sol": {
+  "bytes": 803,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "dependency",
+  "sha1": "c6fd869bc1643269e1ae164382e57327a3b1f25f",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/interfaces/IUniswapV3PoolDeployer.sol": {
+  "bytes": 1245,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "5bde603279573c229a4e243c2e137c15e3621478",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/interfaces/callback/IUniswapV3FlashCallback.sol": {
+  "bytes": 911,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "3aa642aeb62e56e0af49c538ad040308cee237c5",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/interfaces/callback/IUniswapV3MintCallback.sol": {
+  "bytes": 920,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "d14fb4e2dfd30af5d557e9ac2d62634e9ad20813",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/interfaces/callback/IUniswapV3SwapCallback.sol": {
+  "bytes": 1192,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "1817045b7525e857bccb0f233c298e6b6f635ebc",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/interfaces/pool/IUniswapV3PoolActions.sol": {
+  "bytes": 6129,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "736fb138eae7d9a38fd071a9afe86cc7000c1c53",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/interfaces/pool/IUniswapV3PoolDerivedState.sol": {
+  "bytes": 2348,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "c9dbedfedeb3623f7071be186c3eef6fb6ce3825",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/interfaces/pool/IUniswapV3PoolEvents.sol": {
+  "bytes": 5865,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "3b33e54b9728d5a2c52665a344f52410aa791484",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/interfaces/pool/IUniswapV3PoolImmutables.sol": {
+  "bytes": 1805,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "8b59daa7e15edd358c74907db5b196b3dda84e59",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/interfaces/pool/IUniswapV3PoolOwnerActions.sol": {
+  "bytes": 1182,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "1eac7176f76084ab0877f03acf0e445a70fc68c2",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/interfaces/pool/IUniswapV3PoolState.sol": {
+  "bytes": 6136,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "f2d0cc9db73aea2b27d40ba34be007024b77a62f",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/libraries/BitMath.sol": {
+  "bytes": 2784,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "e4bfdb28ed98ed16ed124a546269c8d778fa533a",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/libraries/FixedPoint128.sol": {
+  "bytes": 305,
+  "pragma": ">=0.4.0",
+  "project": "uniswap-v3-core",
+  "role": "dependency",
+  "sha1": "ac320bd721272d31cb7dba14def367cf503fd7d0",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/libraries/FixedPoint96.sol": {
+  "bytes": 374,
+  "pragma": ">=0.4.0",
+  "project": "uniswap-v3-core",
+  "role": "dependency",
+  "sha1": "bc64816517214256959fa42558c1aa3006a5b690",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/libraries/FullMath.sol": {
+  "bytes": 5039,
+  "pragma": ">=0.4.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "0a4aacb202cc481d0ab1d2775e65803aeccc153e",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/libraries/LiquidityMath.sol": {
+  "bytes": 507,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "e441a9f8df3525dd07f0134c3372e5b3bd95411d",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/libraries/LowGasSafeMath.sol": {
+  "bytes": 1390,
+  "pragma": ">=0.7.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "92b57a799bf9e42a2d92027895e8fe475ab8e330",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/libraries/Oracle.sol": {
+  "bytes": 15501,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "8930b898d0b8bfaa87c6e814932d34094c995a3c",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/libraries/Position.sol": {
+  "bytes": 3585,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "db4272f2fb089517ffe221e56809a0804472cc0b",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/libraries/SafeCast.sol": {
+  "bytes": 925,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "0adcb1966d65f172ccf98013c6912a65e13b34b9",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/libraries/SecondsOutside.sol": {
+  "bytes": 5383,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "eb53f25d36cb09dd66222f113637856bd5a2501b",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/libraries/SqrtPriceMath.sol": {
+  "bytes": 10632,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "fe667bb48012127930e741b09a76d635adfc54da",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/libraries/SwapMath.sol": {
+  "bytes": 4637,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "0e3e506f7458a609869e1517c8bc2688e94cccb3",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/libraries/Tick.sol": {
+  "bytes": 7685,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "9fcbfc8197b192d86385dce4009d0a8d81fa1ecd",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/libraries/TickBitmap.sol": {
+  "bytes": 4114,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "ca4689c623d6e400c2927a1d112b64e9a2b4739a",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/libraries/TickMath.sol": {
+  "bytes": 8626,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "80e9864f1b3e9eb2fa8ecaa57599bed816cb4c96",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/libraries/TransferHelper.sol": {
+  "bytes": 979,
+  "pragma": ">=0.6.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "63f38d597718e03299eb8fadc1828e6101bb51ca",
+  "unresolved_imports": []
+ },
+ "uniswap-v3-core/contracts/libraries/UnsafeMath.sol": {
+  "bytes": 580,
+  "pragma": ">=0.5.0",
+  "project": "uniswap-v3-core",
+  "role": "scored",
+  "sha1": "cb17ca73aea8a2b7d214d3dc92c8e5fc809fc59d",
+  "unresolved_imports": []
+ },
+ "yield-fydai/contracts/Controller.sol": {
+  "bytes": 19669,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "scored",
+  "sha1": "5a1afb118afdb1ba327a713747f1b1b1d33dba0e",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/math/Math.sol",
+   "@openzeppelin/contracts/math/SafeMath.sol"
+  ]
+ },
+ "yield-fydai/contracts/Liquidations.sol": {
+  "bytes": 9578,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "scored",
+  "sha1": "e8b8952917cbc1ceda896c2fc0b9953ee4f69f25",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/math/Math.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "yield-fydai/contracts/Treasury.sol": {
+  "bytes": 13521,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "scored",
+  "sha1": "682bd8f406f8582a40fdd90f32655c793b5b22bf",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/math/Math.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "yield-fydai/contracts/Unwind.sol": {
+  "bytes": 8533,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "scored",
+  "sha1": "24e3e29772b9172e783d7a3c3adcab31d3bc30dc",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/access/Ownable.sol",
+   "@openzeppelin/contracts/math/Math.sol",
+   "@openzeppelin/contracts/math/SafeMath.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "yield-fydai/contracts/YDai.sol": {
+  "bytes": 6825,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "scored",
+  "sha1": "4785ae91c42f11f53a5a8e66e6761dacf7d08314",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/math/Math.sol"
+  ]
+ },
+ "yield-fydai/contracts/helpers/DecimalMath.sol": {
+  "bytes": 1128,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "scored",
+  "sha1": "e5b14d99c9bf410e26f12312f7a45629fa9e7d09",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/math/SafeMath.sol"
+  ]
+ },
+ "yield-fydai/contracts/helpers/Delegable.sol": {
+  "bytes": 1068,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "scored",
+  "sha1": "25871028af9985d8c4f9f5eed87e211daf3fa34e",
+  "unresolved_imports": []
+ },
+ "yield-fydai/contracts/helpers/ERC20Permit.sol": {
+  "bytes": 2607,
+  "pragma": "^0.6.0",
+  "project": "yield-fydai",
+  "role": "scored",
+  "sha1": "28ddec4cec5f652338572ac25f36d4de07209455",
+  "unresolved_imports": [
+   "../interfaces/IERC2612.sol",
+   "@openzeppelin/contracts/cryptography/ECDSA.sol",
+   "@openzeppelin/contracts/token/ERC20/ERC20.sol"
+  ]
+ },
+ "yield-fydai/contracts/helpers/Orchestrated.sol": {
+  "bytes": 1189,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "scored",
+  "sha1": "6fc7dc6ad532594d5e62cc2e52e3d732f853a5ca",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/access/Ownable.sol"
+  ]
+ },
+ "yield-fydai/contracts/interfaces/IChai.sol": {
+  "bytes": 827,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "dependency",
+  "sha1": "5c7c25d19b4d99ba743604a11cd0cd8be5e39dfd",
+  "unresolved_imports": []
+ },
+ "yield-fydai/contracts/interfaces/IController.sol": {
+  "bytes": 1315,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "dependency",
+  "sha1": "ed05c0b03cac0034af2c7623b294d41ad87d8e55",
+  "unresolved_imports": []
+ },
+ "yield-fydai/contracts/interfaces/IDaiJoin.sol": {
+  "bytes": 392,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "dependency",
+  "sha1": "7be2f1ac207665bf4ce2ce53a7f238749a2aa9f1",
+  "unresolved_imports": []
+ },
+ "yield-fydai/contracts/interfaces/IEnd.sol": {
+  "bytes": 413,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "dependency",
+  "sha1": "1b77bb0d594eb48a5947bfdc27d9be90be331815",
+  "unresolved_imports": []
+ },
+ "yield-fydai/contracts/interfaces/IFlashMinter.sol": {
+  "bytes": 193,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "dependency",
+  "sha1": "e30b3d78e64618558b2838431b1107b4ba5ffe6b",
+  "unresolved_imports": []
+ },
+ "yield-fydai/contracts/interfaces/IGemJoin.sol": {
+  "bytes": 394,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "dependency",
+  "sha1": "66963ac6bc3c651bfbfd9a5786ddd483ff3c90b0",
+  "unresolved_imports": []
+ },
+ "yield-fydai/contracts/interfaces/ILiquidations.sol": {
+  "bytes": 260,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "dependency",
+  "sha1": "31f574dbb9d6009b86cadfbbd87e3ffebe85ac56",
+  "unresolved_imports": []
+ },
+ "yield-fydai/contracts/interfaces/IPool.sol": {
+  "bytes": 755,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "dependency",
+  "sha1": "605490c1407bf8a4ba06fc73a44a6c815fdd066d",
+  "unresolved_imports": []
+ },
+ "yield-fydai/contracts/interfaces/IPot.sol": {
+  "bytes": 571,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "dependency",
+  "sha1": "0cd8e604b78910293a926b12fb2ee671d78a5e73",
+  "unresolved_imports": []
+ },
+ "yield-fydai/contracts/interfaces/ITreasury.sol": {
+  "bytes": 637,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "dependency",
+  "sha1": "5163b0a2ce215d4bfb28ec33e3c528c20096a994",
+  "unresolved_imports": []
+ },
+ "yield-fydai/contracts/interfaces/IVat.sol": {
+  "bytes": 1003,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "dependency",
+  "sha1": "370f8e8a40cbd4c91978cea71ff44b5c2683762d",
+  "unresolved_imports": []
+ },
+ "yield-fydai/contracts/interfaces/IWeth.sol": {
+  "bytes": 369,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "dependency",
+  "sha1": "e0b1edadd14db021f81500d18338deef41125fb4",
+  "unresolved_imports": []
+ },
+ "yield-fydai/contracts/interfaces/IYDai.sol": {
+  "bytes": 862,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "dependency",
+  "sha1": "98dda696df7a03d2530f99096c7a31e50793894d",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "yield-fydai/contracts/peripheral/DaiProxy.sol": {
+  "bytes": 6096,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "scored",
+  "sha1": "a67751401a95552432178373645c304fa54c7432",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "yield-fydai/contracts/peripheral/EthProxy.sol": {
+  "bytes": 1878,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "scored",
+  "sha1": "f4d278ef74a955c45c6d52881ca23a534a5db771",
+  "unresolved_imports": []
+ },
+ "yield-fydai/contracts/peripheral/LimitPool.sol": {
+  "bytes": 2635,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "scored",
+  "sha1": "98cd56e59b1043f4a6a0a6a737c088d9400c241d",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/math/SafeMath.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "yield-fydai/contracts/peripheral/Splitter.sol": {
+  "bytes": 10087,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "scored",
+  "sha1": "b7aa8aec8330dd6e1d5efd84c599d6a560c957f0",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/math/Math.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "yield-fydai/contracts/pool/Pool.sol": {
+  "bytes": 12198,
+  "pragma": "^0.6.10",
+  "project": "yield-fydai",
+  "role": "scored",
+  "sha1": "6771188a962350c626b9e7404ac393198f0b3111",
+  "unresolved_imports": [
+   "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+   "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ]
+ },
+ "yield-fydai/contracts/pool/YieldMath.sol": {
+  "bytes": 32450,
+  "pragma": "^0.6.0",
+  "project": "yield-fydai",
+  "role": "scored",
+  "sha1": "5e8a2c3d2a0927d1aa9c8a858b4f3d03c42a61bb",
+  "unresolved_imports": [
+   "./ABDKMath64x64.sol"
+  ]
+ }
+}

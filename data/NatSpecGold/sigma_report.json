@@ -1,0 +1,46 @@
+{
+ "scored_files": 208,
+ "compiled": 98,
+ "analysed": 98,
+ "unresolved_imports": 110,
+ "compile_failed": 0,
+ "slither_failed": 0,
+ "functions": 546,
+ "joined": 401,
+ "unjoined": 145,
+ "reused": 98,
+ "pairs_total": 1426,
+ "pairs_with_sigma": 401,
+ "failures": {},
+ "compilers": {
+  "0.8.13": 51,
+  "0.7.6": 15,
+  "0.8.10": 15,
+  "0.6.12": 2,
+  "0.6.10": 12,
+  "0.8.6": 2,
+  "0.8.0": 1
+ },
+ "invariants": "all hold",
+ "node_type_histogram": {
+  "EXPRESSION": 1330,
+  "VARIABLE": 482,
+  "IF": 410,
+  "ENDIF": 387,
+  "ENTRYPOINT": 359,
+  "RETURN": 287,
+  "ASSEMBLY": 33,
+  "ENDASSEMBLY": 33,
+  "PLACEHOLDER": 18,
+  "STARTLOOP": 14,
+  "ENDLOOP": 14,
+  "IFLOOP": 14
+ },
+ "call_kind_histogram": {
+  "internal": 298,
+  "builtin": 295,
+  "library": 275,
+  "external": 106,
+  "low_level": 4
+ }
+}

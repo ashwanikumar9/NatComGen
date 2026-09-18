@@ -1,0 +1,25 @@
+{
+ "files_total": 352,
+ "quarantined": {},
+ "scored": 208,
+ "dependency": 125,
+ "pairs_verified": 860,
+ "pairs_partial": 566,
+ "inheritdoc_resolved": 96,
+ "duplicates_dropped": 146,
+ "unresolved_imports": 288,
+ "defect_histogram": {
+  "param_missing": 995,
+  "return_missing": 289,
+  "text_short": 42,
+  "no_text": 18,
+  "param_unknown": 3,
+  "return_empty": 1,
+  "name_echo": 1
+ },
+ "split_counts": {
+  "train": 519,
+  "test": 193,
+  "val": 148
+ }
+}
