@@ -5,10 +5,16 @@ tree: the source contracts, the built corpus, the code, the tests and a single
 script that runs the whole thing.
 
 ```
+chmod +x run_pipeline.sh setup_env.py tools/stub_ollama.py   # after unzipping
 ./setup_env.py --check        # is this machine able to run it?
 ./run_pipeline.sh --status    # what is done and what is not
 ./run_pipeline.sh             # run everything that can run
 ```
+
+The `chmod` is needed because a zip carries no Unix executable bit, so a
+transfer through Windows arrives without it. `setup_env.py --check` warns when
+it is missing and prints that line; nothing else in the pipeline depends on
+it.
 
 ---
 
@@ -53,7 +59,7 @@ NatComGen/
   PACKAGE.md             the design notes: why each stage is built as it is
 
   natspec_corpus/        the 22 modules, stage 1 through stage 4
-  tests/                 373 tests, 92% line coverage
+  tests/                 374 tests, 92% line coverage
   tools/stub_ollama.py   a fake model, for testing the wiring offline
 
   data/sources/          352 .sol files from 13 audited projects
@@ -211,14 +217,14 @@ never written, which had made it re-run on every single invocation.
 ## Verification
 
 ```bash
-python -m pytest tests -q                                          # 373 tests
+python -m pytest tests -q                                          # 374 tests
 python -m coverage run --source=natspec_corpus,tools -m pytest tests
 python -m coverage report                                          # 92%
 ```
 
 Four layers, described in full in `PACKAGE.md`:
 
-1. **373 unit tests** over inline Solidity fixtures, including the shell
+1. **374 unit tests** over inline Solidity fixtures, including the shell
    script itself and the offline stub.
 2. **17 build invariants**, re-derived from the *written* artifacts rather
    than the in-memory objects, so a bug in the writer is caught too. Every

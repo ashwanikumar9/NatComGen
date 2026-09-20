@@ -8,7 +8,7 @@ ways that corrupted the data silently.
 python -m natspec_corpus.build [SRC_ROOT] [OUT_ROOT]      # stage 1: extraction
 python -m natspec_corpus.sigma_build [CORPUS_ROOT]        # stage 1b: Σ(f)
 python -m natspec_corpus.reproduce [SRC] [OUT]            # rebuild + verify
-python -m pytest tests -q                                 # 373 tests
+python -m pytest tests -q                                 # 374 tests
 python -m coverage run --source=natspec_corpus -m pytest tests  # 92%
 ```
 
@@ -117,7 +117,7 @@ declaration the extractor found — zero offset mismatches.
 
 ## Verification layers
 
-1. **373 unit tests** (92% line coverage; what is left is named in the README) over inline Solidity fixtures — the lexer's ambiguous
+1. **374 unit tests** (92% line coverage; what is left is named in the README) over inline Solidity fixtures — the lexer's ambiguous
    cases, parameter shapes, attachment rules, tag parsing, scoring.
 2. **17 build invariants** re-derived from the *written* artifacts, not from
    the in-memory objects, so a bug in the writer is caught too. Twelve cover

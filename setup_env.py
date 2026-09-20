@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -130,6 +131,20 @@ def check() -> dict:
                                     and report.get("solc_versions") else "blocked")
     report["stages"]["2 retrieval index"] = (
         "ready" if "faiss" not in report["problems"] else "blocked")
+
+    # A zip that has been through Windows loses the executable bit, and then
+    # `./run_pipeline.sh` fails with Permission denied for a reason that looks
+    # nothing like a file mode. Cheap to check, annoying to diagnose.
+    not_executable = [f for f in ("run_pipeline.sh", "setup_env.py",
+                                  "tools/stub_ollama.py")
+                      if (HERE / f).exists() and not os.access(HERE / f, os.X_OK)]
+    if not_executable:
+        say(WARN, "executable bit",
+            f"missing on {', '.join(not_executable)} — "
+            f"run: chmod +x {' '.join(not_executable)}")
+        report["warnings"].append(f"not executable: {not_executable}")
+    else:
+        say(OK, "executable bit")
 
     host = _ollama()
     if host:

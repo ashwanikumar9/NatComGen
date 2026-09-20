@@ -23,6 +23,18 @@ pytestmark = pytest.mark.skipif(not SCRIPT.exists(),
                                 reason="run_pipeline.sh not in this tree")
 
 
+def _run(*args, **kw):
+    """Invoke the script through `bash` rather than by path.
+
+    The executable bit does not survive a zip round trip through Windows, nor
+    a clone on a filesystem without one. Depending on it here made eleven
+    tests fail with PermissionError on the GPU box — and since the `tests`
+    stage gates the pipeline, that took the whole run down over a file mode.
+    """
+    return subprocess.run(["bash", str(SCRIPT), *args], capture_output=True,
+                          text=True, cwd=ROOT, **kw)
+
+
 def _fn(name: str, call: str, env=None) -> str:
     """Run one of the script's functions in isolation."""
     body = subprocess.run(
@@ -72,9 +84,17 @@ def test_every_documented_option_is_accepted():
         assert f"{opt})" in body, f"{opt} is documented but not parsed"
 
 
+def test_no_test_here_invokes_the_script_by_path():
+    """Invoking by path needs the executable bit, which a zip through Windows
+    and some clones do not carry. Everything here goes through `bash`."""
+    src = Path(__file__).read_text()
+    needle = "subprocess.run(" + "[str(SCRIPT)"   # split, or this test is a hit
+    assert needle not in src, \
+        "invoke the script with _run(), which calls it through bash"
+
+
 def test_an_unknown_option_is_rejected_rather_than_ignored():
-    out = subprocess.run([str(SCRIPT), "--nonsense"], capture_output=True,
-                         text=True, cwd=ROOT)
+    out = _run("--nonsense")
     assert out.returncode == 2 and "unknown option" in out.stderr
 
 
@@ -125,6 +145,38 @@ def test_an_added_file_changes_the_tree_hash(tmp_path):
     (b / "sub" / "extra.sol").write_text("contract D {}")
     assert _fn("_hash_tree", f"_hash_tree {a}") != _fn("_hash_tree",
                                                        f"_hash_tree {b}")
+
+
+def test_the_tree_hash_pins_the_collation_locale():
+    """`sort` collates by locale and the digest is order-dependent: under C,
+    uppercase sorts first so `openzeppelin-*` comes last; under en_US.UTF-8
+    case is folded and it comes first. Same files, different order, different
+    hash — which surfaced as `corpus STALE` on a box whose only difference
+    from the build machine was $LANG.
+
+    Checked at the source, because a machine with one locale installed cannot
+    demonstrate the disagreement no matter how the test is written."""
+    body = subprocess.run(["sed", "-n", "/^_hash_tree()/,/^}/p", str(SCRIPT)],
+                          capture_output=True, text=True).stdout
+    assert "sort" in body, "the tree hash no longer sorts"
+    assert "LC_ALL=C sort" in body, \
+        "sort in _hash_tree must be locale-pinned or the hash is not portable"
+
+
+def test_the_tree_hash_is_the_same_under_every_locale_available_here(tmp_path):
+    """Weaker than the check above wherever only C locales exist, but it is
+    the one that would catch a regression on a machine that has more."""
+    root = _tree(tmp_path / "a")
+    for extra in ("Zebra.sol", "apple.sol", "Mango.sol", "_under.sol"):
+        (root / "sub" / extra).write_text(f"contract {extra[:3]} {{}}")
+    locales = subprocess.run(["locale", "-a"], capture_output=True,
+                             text=True).stdout.split() or ["C"]
+    hashes = set()
+    for loc in locales[:8]:
+        import os
+        env = dict(os.environ, LC_ALL=loc, LANG=loc)
+        hashes.add(_fn("_hash_tree", f"_hash_tree {root}", env=env))
+    assert len(hashes) == 1, f"the hash varies by locale: {hashes}"
 
 
 def test_hashing_a_missing_file_is_not_an_error(tmp_path):
@@ -220,8 +272,7 @@ def test_setup_env_reports_a_machine_that_cannot_run_the_pipeline():
 # -- the script runs ---------------------------------------------------------
 
 def test_status_names_every_stage_and_exits_cleanly():
-    out = subprocess.run([str(SCRIPT), "--status"], capture_output=True,
-                         text=True, cwd=ROOT)
+    out = _run("--status")
     assert out.returncode == 0, out.stderr
     line = SCRIPT.read_text().splitlines()
     stages = next(l for l in line if l.startswith("STAGES=(")
@@ -233,8 +284,7 @@ def test_status_names_every_stage_and_exits_cleanly():
 def test_status_reports_a_state_for_every_stage():
     """Every line has to say something; a blank state is how a stage gets
     quietly skipped."""
-    out = subprocess.run([str(SCRIPT), "--status"], capture_output=True,
-                         text=True, cwd=ROOT).stdout
+    out = _run("--status").stdout
     states = {"done", "pending", "STALE", "FAILED"}
     lines = [l for l in out.splitlines() if l.startswith("  ") and l.strip()]
     assert lines
@@ -243,8 +293,7 @@ def test_status_reports_a_state_for_every_stage():
 
 
 def test_help_prints_the_header_without_running_anything():
-    out = subprocess.run([str(SCRIPT), "--help"], capture_output=True,
-                         text=True, cwd=ROOT)
+    out = _run("--help")
     assert out.returncode == 0
     assert "--status" in out.stdout and "CHECKPOINT" in out.stdout.upper()
 
@@ -314,11 +363,6 @@ def test_an_unknown_path_is_a_404_not_a_silent_empty_answer(stub_server):
 
 ALL_SLOTS = ("INTENT_REASONER_MODEL", "GENERATOR_MODEL",
              "SEMANTIC_CRITIC_MODEL", "VERIFIER_MODEL")
-
-
-def _run(*args, **kw):
-    return subprocess.run([str(SCRIPT), *args], capture_output=True,
-                          text=True, cwd=ROOT, **kw)
 
 
 @pytest.fixture

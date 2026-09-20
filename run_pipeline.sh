@@ -52,6 +52,19 @@ CORPUS=""            # --corpus, or $DATA/NatSpecGold; resolved after parsing
 PY="${PYTHON:-python3}"
 export PYTHONPATH="$HERE${PYTHONPATH:+:$PYTHONPATH}"
 
+# Compilers installed inside the project by tools/install_solc.py. Picked up
+# without an exported variable so a machine where you have no sudo, and no
+# business writing to ~/.solc-select, needs no extra setup step.
+if [[ -z "${SOLC_SHIM_ROOT:-}" && -d "$HERE/.solc" ]]; then
+  export SOLC_SHIM_ROOT="$HERE/.solc"
+fi
+
+# A project-local virtualenv, if one was made, so nothing is installed into a
+# shared conda base on a shared machine.
+if [[ -x "$HERE/.venv/bin/python" && "$PY" == "python3" ]]; then
+  PY="$HERE/.venv/bin/python"
+fi
+
 mkdir -p "$LOGS"
 
 # --- options --------------------------------------------------------------
@@ -138,8 +151,14 @@ _hash_tree() {
   # Hashed from inside the directory, so the names that go into the digest are
   # relative to it — a renamed file still changes the answer, a moved tree
   # does not.
+  #
+  # LC_ALL=C on the sort, because collation is locale-dependent and the digest
+  # is order-dependent. Under C, uppercase sorts before lowercase, so
+  # `openzeppelin-*` comes last; under en_US.UTF-8 case is folded and it comes
+  # first. Identical files, different order, different hash — which showed up
+  # as `corpus STALE` on a machine whose only difference was $LANG.
   ( cd "$1" && find . -type f \( -name '*.sol' -o -name '*.jsonl' \) 2>/dev/null \
-      | sort | xargs -r sha1sum 2>/dev/null | sha1sum )
+      | LC_ALL=C sort | xargs -r sha1sum 2>/dev/null | sha1sum )
 }
 
 marker()  { echo "$STATE/$1.done"; }

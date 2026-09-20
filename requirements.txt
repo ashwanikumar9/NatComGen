@@ -23,6 +23,11 @@ sentence-transformers>=2.2   # only for a real encoder; the offline
 scipy>=1.10                  # exact Wilcoxon; stats.py falls back without it
 matplotlib>=3.7              # the ablation figure
 
+# --- baselines (tools/baselines.py, tools/split_effect.py) ---------------
+sacrebleu>=2.3               # a standard BLEU, for numbers meant to sit
+                             # beside published ones; evaluate.py's in-house
+                             # per-field BLEU stays the primary metric
+
 # --- tests ---------------------------------------------------------------
 pytest>=7.0
 coverage>=7.0
