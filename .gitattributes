@@ -1,0 +1,12 @@
+# Git must not touch these files. The corpus records CHARACTER OFFSETS into
+# every source file, and Σ(f) joins its fact tables to those offsets. A CRLF
+# conversion on checkout shifts each one by the number of preceding lines, so
+# a round trip through Windows silently moves every function by a different
+# amount and the join quietly attaches facts to the wrong declaration.
+#
+# This is not hypothetical: the same tree hashed differently on Linux after a
+# push from Windows, which is what sent `corpus` permanently STALE.
+* -text
+
+*.sh text eol=lf
+*.py text eol=lf

@@ -114,8 +114,15 @@ def check() -> dict:
             say(OK, f"solc ({len(found)})", ", ".join(found[:6])
                 + (" …" if len(found) > 6 else ""))
         else:
-            say(BAD, "solc", "no compiler found; run with --solc")
-            report["problems"].append("solc")
+            # A warning, not a failure. Without a compiler you lose the emit
+            # stage and any rebuild of Σ(f); everything else — corpus,
+            # retrieval, the harness, the ablation matrix — runs fine, and a
+            # hard failure here stops all of it over a stage you may not need
+            # today. The per-stage report below says exactly what is lost.
+            say(WARN, "solc", "no compiler found; run: "
+                              "python tools/install_solc.py")
+            report["warnings"].append("solc missing: emit and a Σ(f) rebuild "
+                                      "are unavailable")
         missing = [v for v in ("0.8.13", "0.7.6", "0.6.12") if v not in found]
         if missing and found:
             say(WARN, "solc coverage",
@@ -128,7 +135,10 @@ def check() -> dict:
     # --- the model, which is optional here --------------------------------
     report["stages"]["1 corpus"] = "ready" if not report["problems"] else "blocked"
     report["stages"]["1b sigma"] = ("ready" if "slither" not in report["problems"]
-                                    and report.get("solc_versions") else "blocked")
+                                    and report.get("solc_versions")
+                                    else "no compiler")
+    report["stages"]["5 emit"] = ("ready" if report.get("solc_versions")
+                                  else "no compiler")
     report["stages"]["2 retrieval index"] = (
         "ready" if "faiss" not in report["problems"] else "blocked")
 

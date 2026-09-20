@@ -39,6 +39,12 @@ HERE = Path(__file__).resolve().parent.parent
 ROOT = Path(os.environ.get("SOLC_SHIM_ROOT", HERE / ".solc"))
 INDEX = "https://binaries.soliditylang.org/linux-amd64/list.json"
 BASE = "https://binaries.soliditylang.org/linux-amd64/"
+#: Route 0. The same static linux-amd64 builds, published as GitHub release
+#: assets. Kept first because binaries.soliditylang.org is blocked outright on
+#: some university and corporate networks — it answered 403 to every version
+#: on the network this was written for — while github.com is reachable
+#: wherever git is.
+GH = "https://github.com/ethereum/solidity/releases/download/v{v}/solc-static-linux"
 
 #: What the 13 corpus projects actually pin.
 VERSIONS = ["0.8.13", "0.8.10", "0.8.7", "0.8.6", "0.8.3", "0.8.0",
@@ -74,6 +80,25 @@ def _place(version: str, blob: bytes) -> Path:
     tmp.chmod(tmp.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP)
     os.replace(tmp, d / "solc")
     return d / "solc"
+
+
+def from_github(versions: List[str]) -> Dict[str, str]:
+    """Route 0: GitHub release assets, one static binary per tag."""
+    results: Dict[str, str] = {}
+    for v in versions:
+        try:
+            req = urllib.request.Request(
+                GH.format(v=v), headers={"User-Agent": "natcomgen-installer"})
+            with urllib.request.urlopen(req, timeout=180) as r:
+                blob = r.read()
+            if len(blob) < 1_000_000:
+                results[v] = f"suspiciously small download ({len(blob)} bytes)"
+                continue
+            _place(v, blob)
+            results[v] = "ok"
+        except Exception as e:                              # noqa: BLE001
+            results[v] = str(e)[:120]
+    return results
 
 
 def from_binaries(versions: List[str]) -> Dict[str, str]:
@@ -156,12 +181,17 @@ def main() -> int:
         return 0
 
     print(f"installing {len(wanted)} compilers into {ROOT}\n", flush=True)
-    results = from_binaries(wanted)
-    retry = [v for v, r in results.items() if r != "ok"]
-    if retry:
-        print(f"direct download failed for {len(retry)}; trying solc-select\n",
-              flush=True)
-        results.update(from_solc_select(retry))
+    results: Dict[str, str] = {}
+    for label, route in (("github releases", from_github),
+                         ("binaries.soliditylang.org", from_binaries),
+                         ("solc-select", from_solc_select)):
+        todo = [v for v in wanted if results.get(v) != "ok"]
+        if not todo:
+            break
+        print(f"  trying {label} for {len(todo)}…", flush=True)
+        results.update(route(todo))
+        done = sum(1 for v in wanted if results.get(v) == "ok")
+        print(f"  {done}/{len(wanted)} installed", flush=True)
 
     for v in sorted(results):
         print(f"  {'ok  ' if results[v] == 'ok' else 'FAIL'} {v}"

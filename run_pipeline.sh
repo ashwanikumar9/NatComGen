@@ -157,8 +157,17 @@ _hash_tree() {
   # `openzeppelin-*` comes last; under en_US.UTF-8 case is folded and it comes
   # first. Identical files, different order, different hash — which showed up
   # as `corpus STALE` on a machine whose only difference was $LANG.
+  #
+  # Line endings are stripped before hashing, because the corpus builder
+  # normalises them anyway: the same 352 sources produce a byte-identical
+  # pairs.jsonl whether they arrive CRLF or LF. Hashing the raw bytes made a
+  # checkout through Windows-flavoured git look like changed input and sent
+  # `corpus` permanently STALE, re-running a build guaranteed to produce what
+  # was already there.
   ( cd "$1" && find . -type f \( -name '*.sol' -o -name '*.jsonl' \) 2>/dev/null \
-      | LC_ALL=C sort | xargs -r sha1sum 2>/dev/null | sha1sum )
+      | LC_ALL=C sort \
+      | while IFS= read -r f; do printf '%s ' "$f"; tr -d '\r' < "$f" | sha1sum; done \
+      | sha1sum )
 }
 
 marker()  { echo "$STATE/$1.done"; }
@@ -582,6 +591,13 @@ for s in "${selected[@]}"; do
     report|emit)
       if [[ ! -d "$CORPUS/runs" ]]; then
         skip_stage "$s" "nothing generated yet"
+        continue
+      fi
+      # emit recompiles every documented file and compares its devdoc, so with
+      # no compiler it cannot do its job. Skipped rather than failed, for the
+      # same reason the model stages are: a missing tool is a normal state.
+      if [[ "$s" == "emit" ]] && ! compgen -G "${SOLC_SHIM_ROOT:-/nonexistent}/*/solc" >/dev/null; then
+        skip_stage "$s" "no compiler — run: $PY tools/install_solc.py"
         continue
       fi ;;
   esac

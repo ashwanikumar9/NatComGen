@@ -309,3 +309,44 @@ def test_every_check_passes_on_a_well_formed_corpus(corpus):
         {"train": ["proj/C.sol"], "val": [], "test": [], "never_index": []}))
     checks.run_all(corpus, {}, [pair()], [], m)
     checks.run_sigma_checks(corpus, [table()])
+
+
+# -- line endings ----------------------------------------------------------
+# Sources arrive CRLF; a git checkout on Linux turns them LF. The builder
+# normalises either way, so the corpus is unaffected — but the checkpoint
+# fingerprint hashed the raw bytes and so saw a changed input where there was
+# none, which sent `corpus` permanently STALE on the machine it was cloned to.
+
+def test_the_corpus_builds_identically_from_crlf_and_lf_sources(tmp_path):
+    """The invariant that makes the line-ending question a non-issue. If this
+    ever fails, a checkout through Windows silently produces a different
+    corpus, and every Σ(f) offset joins to the wrong declaration."""
+    from natspec_corpus import build as corpus_build
+    root = Path(__file__).resolve().parent.parent / "data" / "sources"
+    if not root.is_dir():
+        pytest.skip("no source tree in this checkout")
+
+    crlf, lf = tmp_path / "crlf", tmp_path / "lf"
+    for p in root.rglob("*.sol"):
+        body = p.read_bytes().replace(b"\r\n", b"\n")
+        for dest, blob in ((crlf, body.replace(b"\n", b"\r\n")), (lf, body)):
+            d = dest / p.relative_to(root)
+            d.parent.mkdir(parents=True, exist_ok=True)
+            d.write_bytes(blob)
+
+    a, b = tmp_path / "out-crlf", tmp_path / "out-lf"
+    corpus_build.build(crlf, a)
+    corpus_build.build(lf, b)
+    for name in ("pairs.jsonl", "pairs_partial.jsonl", "splits.json",
+                 "manifest.json", "index_allowlist.json"):
+        assert (a / name).read_bytes() == (b / name).read_bytes(), \
+            f"{name} differs between a CRLF and an LF checkout"
+
+
+def test_the_built_corpus_normalises_line_endings():
+    root = Path(__file__).resolve().parent.parent / "data" / "NatSpecGold"
+    if not (root / "contracts").is_dir():
+        pytest.skip("no built corpus in this checkout")
+    bad = [str(p.relative_to(root)) for p in sorted((root / "contracts").rglob("*.sol"))
+           if b"\r\n" in p.read_bytes()][:5]
+    assert not bad, f"CRLF survived into the built corpus: {bad}"
