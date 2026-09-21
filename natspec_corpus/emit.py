@@ -218,6 +218,45 @@ def render_for(c: Comment, decl, *, style: str = "line", indent: str = "",
                   style=style, indent=indent, width=width)
 
 
+#: Tags models reach for that solc does not accept. `@returns` is a plain
+#: typo for `@return`; the rest have no NatSpec equivalent and solc rejects
+#: the file outright, so they are dropped rather than guessed at.
+_ALIASES = {"returns": "return", "params": "param", "parameter": "param"}
+_ALIAS_RE = re.compile(r"(^|\n)(\s*(?:///?|\*)?\s*)@(" +
+                       "|".join(_ALIASES) + r")\b")
+
+
+def normalise(natspec: str, *, style: str = "line", indent: str = "",
+              width: int = DEFAULT_WIDTH) -> str:
+    """Whatever the model returned, as a comment solc will actually read.
+
+    Models return NatSpec *content* — `@notice ...` with no comment markers at
+    all, or with `//`, which solc ignores completely. Splicing that into a
+    source file does not produce an undocumented function, it produces a
+    syntax error: in one run 71 of 110 refined comments failed to compile and
+    77 emitted no tags, entirely because nobody turned the text into a
+    comment. Every downstream measure — the gate, tag emission, parameter
+    coverage, claim support — was measuring formatting rather than content.
+
+    This reformats and nothing else. It never adds a tag, never invents a
+    description, and drops only tags solc would reject anyway.
+    """
+    from .natspec import parse as parse_doc
+    text = _ALIAS_RE.sub(lambda m: f"{m.group(1)}{m.group(2)}@{_ALIASES[m.group(3)]}",
+                         natspec or "")
+    c = from_doc(parse_doc(text))
+    # `render` emits only the parameters named in `param_order` and only
+    # `return_count` returns, so the orders have to come from the comment
+    # itself. Taking them from the declaration instead would quietly inject
+    # the gold parameter list into a generated comment — which would make
+    # parameter coverage measure the corpus rather than the model.
+    return render(c,
+                  param_order=list(c.params),
+                  return_count=len(c.returns),
+                  return_names=[None] * len(c.returns),
+                  style=style, indent=indent, width=width)
+
+
 _TAG = re.compile(r"^\s*@([A-Za-z][A-Za-z0-9:_-]*)")
 
 

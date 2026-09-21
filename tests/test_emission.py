@@ -321,3 +321,56 @@ def test_a_preexisting_orphan_comment_is_not_a_placement_failure():
     rep = verify("t.sol", src, out, {"t.sol": src})
     assert rep.placement_ok and rep.ok, rep.misplaced
     assert "the running total" in out
+
+
+# -- normalising what a model actually returns -----------------------------
+# In a real run 71 of 110 refined comments failed to compile and 77 emitted no
+# tags — not because they were wrong, but because the model returned NatSpec
+# content with no comment markers and nobody turned it into a comment. These
+# cover the shapes that run produced.
+
+def test_bare_tags_become_a_real_comment():
+    from natspec_corpus.emit import normalise
+    out = normalise("@notice Not implemented, always reverts.\n"
+                    "@dev Intended to be overridden.")
+    assert out.startswith("/// @notice")
+    assert "/// @dev" in out
+
+
+def test_double_slash_is_promoted_to_natspec():
+    """`//` is invisible to solc: it compiles and emits nothing at all."""
+    from natspec_corpus.emit import normalise
+    out = normalise("// @notice Allocates liquidity.\n// @param id The pool.")
+    assert out.count("///") == 2 and "//  " not in out
+
+
+def test_normalising_keeps_every_parameter_the_model_wrote():
+    from natspec_corpus.emit import normalise
+    from natspec_corpus.evaluate import fields
+    out = normalise("// @notice N\n// @param a The a\n// @param b The b")
+    assert sorted(fields(out)) == ["notice", "param:a", "param:b"]
+
+
+def test_returns_typo_is_corrected_rather_than_dropped():
+    from natspec_corpus.emit import normalise
+    assert "@return " in normalise("@returns the new total")
+
+
+def test_tags_solc_rejects_are_dropped():
+    """`@throws` has no NatSpec equivalent and makes solc reject the file."""
+    from natspec_corpus.emit import normalise
+    assert "throws" not in normalise("@notice N\n@throws SomeError() when called")
+
+
+def test_normalising_is_idempotent():
+    from natspec_corpus.emit import normalise
+    once = normalise("@notice N\n@param a The a\n@return r")
+    assert normalise(once) == once
+
+
+def test_normalising_invents_nothing():
+    """It reformats. A comment with no parameters must not gain any."""
+    from natspec_corpus.emit import normalise
+    from natspec_corpus.evaluate import fields
+    assert sorted(fields(normalise("@notice Just a notice."))) == ["notice"]
+    assert normalise("") == ""

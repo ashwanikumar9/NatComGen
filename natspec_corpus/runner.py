@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from . import prompts_v3 as P
+from .emit import normalise
 from .errors import CorpusError
 from .gate import GateResult, judge_text, run_gate
 from .llm import Client, LLMError
@@ -87,7 +88,11 @@ def generate(ctx: Context, client: Client, index=None, *,
 
     c = client.call(P.GENERATOR, source=ctx.source, sigma=sigma,
                     intent=intent_text, exemplars=exemplars)
-    draft = c.data.get("natspec", "")
+    # Normalised the moment it arrives. The model returns NatSpec *content*,
+    # frequently with no comment markers or with `//`, which solc cannot see.
+    # Un-normalised, the gate splices bare tag text into a source file and
+    # gets a syntax error, then blames the refinement.
+    draft = normalise(c.data.get("natspec", ""))
     claims = c.data.get("claims", [])
     rec["draft"] = draft
     rec["draft_claims"] = claims
@@ -104,7 +109,7 @@ def generate(ctx: Context, client: Client, index=None, *,
             c = client.call(P.REFINER, source=ctx.source, sigma=sigma,
                             candidate=draft,
                             critique=json.dumps(rec["critique"], indent=1))
-            refined = c.data.get("natspec", draft)
+            refined = normalise(c.data.get("natspec", "")) or draft
             rec["refined"] = refined
             rec["call_L3"] = c.summary()
             if c.data.get("claims"):
