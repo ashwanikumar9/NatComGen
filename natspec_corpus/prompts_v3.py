@@ -25,6 +25,7 @@ citation checkable rather than decorative.
 """
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Optional, Sequence
 
@@ -60,17 +61,38 @@ class Prompt:
     notes: str = ""
 
 
+#: Ollama's default context is small — 2048 on many builds. A Σ(f) evidence
+#: block plus the source plus five retrieved examples is several times that,
+#: and the server truncates silently: no error, no warning, just a model that
+#: never saw the evidence it is being asked to cite. Set it explicitly.
+NUM_CTX = int(os.environ.get("NATCOMGEN_NUM_CTX", "8192"))
+
+#: How to ask for JSON. "schema" hands Ollama the full JSON schema and lets it
+#: constrain decoding, which is the right answer when it works. But llama.cpp
+#: compiles that schema into a grammar, and for these schemas — arrays of
+#: objects holding arrays of strings — that compilation can take minutes or
+#: wedge outright, while the same prompt unconstrained returns in seconds.
+#: "json" asks only for valid JSON and leans on the client-side validation and
+#: retry that `llm.py` already does. "none" disables both.
+JSON_MODE = os.environ.get("NATCOMGEN_JSON_MODE", "schema")
+
+
 def render(p: Prompt, **kwargs) -> Dict[str, Any]:
     missing = set(p.inputs) - set(kwargs)
     if missing:
         raise KeyError(f"{p.id}: missing inputs {sorted(missing)}")
-    return {
+    request: Dict[str, Any] = {
         "model": p.model,
-        "options": {"temperature": p.temp, "num_predict": p.max_tokens},
-        "format": p.schema,
+        "options": {"temperature": p.temp, "num_predict": p.max_tokens,
+                    "num_ctx": NUM_CTX},
         "messages": [{"role": "system", "content": p.system},
                      {"role": "user", "content": p.user.format(**kwargs)}],
     }
+    if JSON_MODE == "schema":
+        request["format"] = p.schema
+    elif JSON_MODE == "json":
+        request["format"] = "json"
+    return request
 
 
 # =============================================================================

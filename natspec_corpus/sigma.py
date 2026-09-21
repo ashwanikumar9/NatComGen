@@ -631,6 +631,8 @@ def analyze(unit, version: str, *, only: Optional[str] = None,
     from .compile import solc_path
 
     cwd = os.getcwd()
+    saved_path = os.environ.get("PATH", "")
+    saved_version = os.environ.get("SOLC_VERSION")
     tmp = tempfile.TemporaryDirectory()
     try:
         import pathlib
@@ -639,15 +641,35 @@ def analyze(unit, version: str, *, only: Optional[str] = None,
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_text(content, encoding="utf-8")
         os.chdir(tmp.name)
+        # crytic-compile resolves `solc` from PATH whatever the `solc=`
+        # argument says. On a machine with solc-select installed — an anaconda
+        # base, typically — that PATH entry is a shim which consults its OWN
+        # store, and fails with "Version '0.7.6' not installed" while thirteen
+        # perfectly good compilers sit in this project's .solc directory.
+        #
+        # Our layout puts exactly one binary, named `solc`, in a directory per
+        # version, so prepending that directory makes every lookup — ours or
+        # crytic-compile's or the shim's — land on the right compiler.
+        # SOLC_VERSION is cleared because the shim reads it and second-guesses
+        # the binary it was handed. Both are restored in the finally block:
+        # this process may go on to analyse a file pinned to another version.
+        binary = solc_path(version)
+        os.environ.pop("SOLC_VERSION", None)
+        os.environ["PATH"] = os.path.dirname(binary) + os.pathsep + saved_path
         try:
             sl = Slither(CryticCompile(
                 SolcStandardJson(target=unit.standard_json()),
-                solc=solc_path(version)))
+                solc=binary))
         except Exception as e:                      # noqa: BLE001
             raise SigmaError(f"{unit.entry}: slither failed: "
                              f"{type(e).__name__}: {e}") from e
     finally:
         os.chdir(cwd)
+        os.environ["PATH"] = saved_path
+        if saved_version is None:
+            os.environ.pop("SOLC_VERSION", None)
+        else:
+            os.environ["SOLC_VERSION"] = saved_version
         tmp.cleanup()
 
     target = only or unit.entry

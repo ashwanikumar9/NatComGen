@@ -529,3 +529,31 @@ def test_shard_write_replaces_the_previous_one(tmp_path):
     _write_shard(p, [{"id": "F1"}])
     _write_shard(p, [{"id": "F2"}])
     assert _read_shard(p) == [{"id": "F2"}]
+
+
+def test_an_empty_analysis_refuses_to_overwrite_existing_tables(tmp_path):
+    """The guard that was missing when two failed runs each wrote zero fact
+    tables over a populated sigma.jsonl, silently invalidating every
+    downstream result."""
+    from natspec_corpus import sigma_build
+    from natspec_corpus.sigma import SigmaError
+    root = tmp_path / "corpus"
+    (root / "sigma").mkdir(parents=True)
+    (root / "sigma" / "sigma.jsonl").write_text('{"id":"F1"}\n{"id":"F2"}\n')
+    (root / "manifest.json").write_text('{"a.sol": {"role": "scored"}}')
+    (root / "pairs.jsonl").write_text("")
+    with pytest.raises(SigmaError, match="refusing to overwrite"):
+        sigma_build.build(root)
+    assert (root / "sigma" / "sigma.jsonl").read_text().count("\n") == 2
+
+
+def test_an_empty_analysis_may_write_when_there_is_nothing_to_lose(tmp_path):
+    """Refusing unconditionally would make a genuinely empty corpus
+    unbuildable, so the guard fires only when it would destroy something."""
+    from natspec_corpus import sigma_build
+    root = tmp_path / "corpus"
+    (root / "sigma").mkdir(parents=True)
+    (root / "manifest.json").write_text('{"a.sol": {"role": "scored"}}')
+    (root / "pairs.jsonl").write_text("")
+    sigma_build.build(root)
+    assert (root / "sigma" / "sigma.jsonl").read_text() == ""

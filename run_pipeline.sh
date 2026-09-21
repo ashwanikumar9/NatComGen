@@ -478,9 +478,22 @@ if [[ $BACKGROUND -eq 1 ]]; then
   shift_args+=(--split "$SPLIT" --seeds "$SEEDS")
   shift_args+=(--ollama "$OLLAMA" --models "$MODELS")
   [[ -n "$LIMIT" ]] && shift_args+=(--limit "$LIMIT")
-  nohup setsid "$0" "${shift_args[@]}" >>"$LOGS/pipeline.log" 2>&1 < /dev/null &
-  echo "detached as pid $! — log: $LOGS/pipeline.log"
-  echo "check with: $0 --status"
+  # Through `bash`, with an absolute path. `$0` is whatever the caller typed:
+  # invoked as `bash run_pipeline.sh` it is a bare relative name, which setsid
+  # looks up on PATH and does not find, and even spelled `./run_pipeline.sh`
+  # it needs an executable bit that no zip and no Windows clone preserves.
+  # Both failures are silent — you get a pid and a dead process.
+  nohup setsid bash "$HERE/run_pipeline.sh" "${shift_args[@]}" \
+        >>"$LOGS/pipeline.log" 2>&1 < /dev/null &
+  local_pid=$!
+  sleep 2
+  if ! kill -0 "$local_pid" 2>/dev/null && ! pgrep -f "run_pipeline.sh --" >/dev/null; then
+    echo "the detached run died immediately — see $LOGS/pipeline.log" >&2
+    tail -n 5 "$LOGS/pipeline.log" >&2
+    exit 1
+  fi
+  echo "detached as pid $local_pid — log: $LOGS/pipeline.log"
+  echo "check with: bash $HERE/run_pipeline.sh --status"
   exit 0
 fi
 

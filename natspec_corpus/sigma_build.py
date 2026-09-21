@@ -167,7 +167,21 @@ def build(corpus_root: Path, *, limit: Optional[int] = None,
     checks.run_sigma_checks(corpus_root, written)
     report["invariants"] = "all hold"
 
-    (out_dir / "sigma.jsonl").write_text(
+    # Never overwrite a populated table set with an empty one. Twice now a
+    # run has failed on every file — once because no compiler was installed,
+    # once because a solc-select shim hijacked the one that was — and written
+    # zero rows over 546 good ones without complaint. Everything downstream
+    # then reads an empty Σ(f): the ablations go vacuous, the retrieval views
+    # collapse to code-only, and nothing anywhere says so. A stage that
+    # destroys its own output on failure is worse than a stage that fails.
+    target = out_dir / "sigma.jsonl"
+    if not written and target.exists() and target.stat().st_size > 0:
+        raise SigmaError(
+            f"analysis produced no fact tables, but {target} already holds "
+            f"{sum(1 for _ in target.open())} of them — refusing to overwrite. "
+            f"{report['slither_failed']} files failed. First failure: "
+            + (next(iter(report['failures'].values()), 'none'))[:200])
+    target.write_text(
         "".join(json.dumps(t, ensure_ascii=False) + "\n" for t in written),
         encoding="utf-8")
     report["pairs_with_sigma"] = len({t["pair_id"] for t in written
