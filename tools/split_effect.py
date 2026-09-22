@@ -124,7 +124,13 @@ def main() -> None:
 
     if args.json:
         args.json.parent.mkdir(parents=True, exist_ok=True)
-        args.json.write_text(json.dumps(report, indent=1), encoding="utf-8")
+        # Never clobber an earlier answer: the second run writes
+        # `<name>_2.json`. See natspec_corpus/versioning.py.
+        from natspec_corpus.versioning import next_path
+        dest = next_path(args.json)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text(json.dumps(report, indent=1), encoding="utf-8")
+        print(f"wrote {dest}", file=sys.stderr)
     print(json.dumps(report, indent=1))
 
 

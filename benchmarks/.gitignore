@@ -1,0 +1,14 @@
+# Build products. Everything here is reproducible from run_benchmark.sh, and
+# the bulk corpus alone runs to tens of gigabytes.
+data/corpus
+data/corpus.db*
+data/selftest/
+data/smartdoc_sources/
+data/smartdoc_corpus/
+data/matched*.jsonl
+data/coverage_*.json
+data/corpus_map_*.json
+results/
+state/
+logs/
+__pycache__/

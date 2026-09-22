@@ -1,4 +1,4 @@
-﻿__pycache__/
+__pycache__/
 *.pyc
 .pytest_cache/
 
@@ -6,3 +6,4 @@
 data/NatSpecGold/.compile-cache/
 data/NatSpecGold/sigma/parts/
 logs/
+results/

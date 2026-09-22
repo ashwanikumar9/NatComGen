@@ -59,12 +59,14 @@ NatComGen/
   PACKAGE.md             the design notes: why each stage is built as it is
 
   natspec_corpus/        the 22 modules, stage 1 through stage 4
-  tests/                 374 tests, 92% line coverage
+  tests/                 399 tests, 92% line coverage
   tools/stub_ollama.py   a fake model, for testing the wiring offline
 
   data/sources/          352 .sol files from 13 audited projects
   data/NatSpecGold/      the built corpus: pairs, splits, Σ(f) fact tables
   results/               tables, figures, manifest, documented contracts
+                         one numbered set per run; RUNS.md is the index
+  benchmarks/            SmartDoc re-grounded benchmark; see its own README
   state/                 the checkpoints
   logs/                  one log per stage
 ```
@@ -102,6 +104,44 @@ validation split.
 The remaining 110 files need npm packages. Run `npm i` in those project
 folders and they light up with no code change — worth doing before the
 ablations, since it roughly doubles the functions that have fact tables.
+
+---
+
+## Results are never overwritten
+
+The first run writes `results/tables/main.md`. The second writes
+`main_2.md`, the third `main_3.md`, and so on — for every table, both its
+Markdown and its LaTeX, the figure, the manifest, the retrieval and harness
+reports, the emission report and the folder of documented contracts.
+
+Two things make the numbering worth having rather than merely safe.
+
+**The number is per run, not per file.** `main_3.md`, `conditions_3.md`,
+`ablations_3.png` and `manifest_3.json` are one run and can be read together.
+Numbering each file on its own would hand you a `main_4.md` next to a
+`conditions_2.md` the first time a configuration was missing, and nothing on
+disk would say they disagreed.
+
+**The number is read off the directory, not from a counter.** Delete
+`main_2.md` and the next run is 2 again. There is no hidden state to drift
+out of step with what you can see.
+
+`results/RUNS.md` is the index — one row per run, with its date, split,
+seeds, configurations and the files it wrote:
+
+```
+| run | when                | split | seeds | configs      | files |
+| 1   | 2026-09-21 18:40:02 | val   | 0     | C1, C5       | 9: `main.md`, `main.tex`, … |
+| 2   | 2026-09-22 09:12:55 | val   | 0,1,2 | C0 … C7      | 13: `main_2.md`, … |
+```
+
+That file is the one thing here that *is* rewritten, because it is a view of
+the ledger beside it rather than a result. `NATCOMGEN_RESULT_VERSIONING=off`
+restores plain overwriting.
+
+Note this interacts with the checkpoints deliberately: a stage that is still
+`done` does not re-run, so you get a new numbered set when something actually
+changed or when you asked for one with `--force`, not on every invocation.
 
 ---
 
@@ -217,14 +257,15 @@ never written, which had made it re-run on every single invocation.
 ## Verification
 
 ```bash
-python -m pytest tests -q                                          # 374 tests
+python -m pytest tests -q                                          # 399 tests
+python -m pytest tests benchmarks/tests -q                         # 442 with the benchmark
 python -m coverage run --source=natspec_corpus,tools -m pytest tests
 python -m coverage report                                          # 92%
 ```
 
 Four layers, described in full in `PACKAGE.md`:
 
-1. **374 unit tests** over inline Solidity fixtures, including the shell
+1. **399 unit tests** over inline Solidity fixtures, including the shell
    script itself and the offline stub.
 2. **17 build invariants**, re-derived from the *written* artifacts rather
    than the in-memory objects, so a bug in the writer is caught too. Every

@@ -22,6 +22,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Dict, List, Optional, Sequence
+from . import versioning as _V
 
 PRIMARY = [
     ("claim_support_rate", "Claim support"),
@@ -205,21 +206,42 @@ def ablation_figure(table: dict, labels: Dict[str, str], path: Path) -> Path:
 def write_report(out_dir: Path, *, results: Dict[str, dict],
                  labels: Dict[str, str], ablations: Optional[dict] = None,
                  manifest: Optional[dict] = None,
-                 figure: bool = True) -> Dict[str, Path]:
-    """Every table in Markdown and LaTeX, the figure, and the manifest."""
+                 figure: bool = True,
+                 run_meta: Optional[dict] = None) -> Dict[str, Path]:
+    """Every table in Markdown and LaTeX, the figure, and the manifest.
+
+    Nothing is overwritten. The first run writes `main.md`, the second
+    `main_2.md`, and so on; every file from one run carries the same number,
+    and `RUNS.md` says what each number was. `versioning.py` explains why,
+    and `NATCOMGEN_RESULT_VERSIONING=off` restores plain overwriting.
+
+    The returned mapping is keyed by the *logical* name — `"main.md"`,
+    whichever version it turned out to be — so a caller can look up a table
+    without first knowing the run number.
+    """
     out_dir = Path(out_dir)
     (out_dir / "tables").mkdir(parents=True, exist_ok=True)
+
+    # Every file this run could write, named up front: the run's number is
+    # one past the highest version any of them already has, so a table that
+    # was missing last time still joins this run rather than starting its own
+    # sequence.
+    names = ["main", "main_with_sigma", "main_without_sigma", "conditions",
+             "ablations", "seeds"]
+    targets = [f"tables/{n}.{ext}" for n in names for ext in ("md", "tex")]
+    targets += ["figures/ablations.png", "manifest.json"]
+    version = _V.RunVersion.open(out_dir, targets)
+
     written: Dict[str, Path] = {}
 
     def emit(name: str, headers, rows, caption: str) -> None:
-        md = out_dir / "tables" / f"{name}.md"
-        tex = out_dir / "tables" / f"{name}.tex"
-        md.write_text(f"**{caption}**\n\n" + markdown_table(headers, rows) + "\n",
-                      encoding="utf-8")
-        tex.write_text(latex_table(headers, rows, caption=caption,
-                                   label=f"tab:{name}") + "\n", encoding="utf-8")
-        written[f"{name}.md"] = md
-        written[f"{name}.tex"] = tex
+        written[f"{name}.md"] = version.write_text(
+            f"tables/{name}.md",
+            f"**{caption}**\n\n" + markdown_table(headers, rows) + "\n")
+        written[f"{name}.tex"] = version.write_text(
+            f"tables/{name}.tex",
+            latex_table(headers, rows, caption=caption,
+                        label=f"tab:{name}") + "\n")
 
     h, r = main_table(results, labels)
     emit("main", h, r, "Results by configuration, all functions.")
@@ -241,18 +263,20 @@ def write_report(out_dir: Path, *, results: Dict[str, dict],
         h, r = seed_table(ablations)
         emit("seeds", h, r, "Seed-to-seed spread per configuration.")
         if figure:
+            fig_path = version.path("figures/ablations.png")
             try:
-                written["ablations.png"] = ablation_figure(
-                    ablations, labels, out_dir / "figures" / "ablations.png")
+                written["ablations.png"] = version.claim(
+                    "figures/ablations.png",
+                    ablation_figure(ablations, labels, fig_path))
             except Exception as e:                       # noqa: BLE001
-                written["ablations.png.error"] = out_dir / "figures" / "error.txt"
-                written["ablations.png.error"].parent.mkdir(parents=True,
-                                                            exist_ok=True)
-                written["ablations.png.error"].write_text(str(e))
+                written["ablations.png.error"] = version.write_text(
+                    "figures/error.txt", str(e))
 
     if manifest is not None:
-        p = out_dir / "manifest.json"
-        p.write_text(json.dumps(manifest, indent=1, sort_keys=True),
-                     encoding="utf-8")
-        written["manifest.json"] = p
+        written["manifest.json"] = version.write_text(
+            "manifest.json",
+            json.dumps(manifest, indent=1, sort_keys=True))
+
+    version.record(**(run_meta or {}))
+    written["RUNS.md"] = out_dir / _V.INDEX
     return written

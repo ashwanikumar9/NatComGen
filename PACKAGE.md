@@ -8,7 +8,7 @@ ways that corrupted the data silently.
 python -m natspec_corpus.build [SRC_ROOT] [OUT_ROOT]      # stage 1: extraction
 python -m natspec_corpus.sigma_build [CORPUS_ROOT]        # stage 1b: Σ(f)
 python -m natspec_corpus.reproduce [SRC] [OUT]            # rebuild + verify
-python -m pytest tests -q                                 # 374 tests
+python -m pytest tests -q                                 # 399 tests
 python -m coverage run --source=natspec_corpus -m pytest tests  # 92%
 ```
 
@@ -45,6 +45,7 @@ python -m coverage run --source=natspec_corpus -m pytest tests  # 92%
 | `experiment.py` | the ablation matrix, run in cache-warm order |
 | `stats.py` | paired bootstrap, Wilcoxon, Holm, Cliff's delta |
 | `report.py` | tables in Markdown and LaTeX, and the ablation figure |
+| `versioning.py` | one number per run, so no result is ever overwritten |
 | `reproduce.py` | hashes every stage boundary; rebuilds and checks |
 
 ## The design rule

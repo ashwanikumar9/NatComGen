@@ -1,0 +1,44 @@
+{
+ "ok": true,
+ "files": {
+  "dataset/test/test.token.code": {
+   "bytes": 345270,
+   "lines": 1000,
+   "sha1": "026325fe6fa70c969367d003a1a802d48544aaf1"
+  },
+  "dataset/test/test.token.nl": {
+   "bytes": 60390,
+   "lines": 1000,
+   "sha1": "fb0f10993484735f3b3acbc894b3864b306f0d5b"
+  },
+  "ref.txt": {
+   "bytes": 60191,
+   "lines": 1000,
+   "sha1": "9798e23247996ca708dbdbc2ca3c44092d7492e3"
+  },
+  "attendgru.out": {
+   "bytes": 49203,
+   "lines": 1000,
+   "sha1": "63fd0e4463998aa157068380913625f432b8fcc5"
+  },
+  "ast-attendgru.out": {
+   "bytes": 47215,
+   "lines": 1000,
+   "sha1": "fc0ae83f1426394e022ab57a403dd1f54d8bdb4c"
+  },
+  "re2com.out": {
+   "bytes": 61778,
+   "lines": 1000,
+   "sha1": "67a761bacf036631439d43ed539723535286d984"
+  },
+  "smartdoc.out": {
+   "bytes": 57940,
+   "lines": 1000,
+   "sha1": "c418e2e1327f85aada6cfbd9b2237497bdf1ed4d"
+  }
+ },
+ "problems": [],
+ "nl_vs_ref_differ_at": [
+  645
+ ]
+}

@@ -284,7 +284,10 @@ out = {"units": len(idx.units),
        "view_coverage": coverage(idx.units),
        "leave_one_out": evaluate_loo(idx),
        "val_units": len(load_units(root, "val"))}
-(root / "retrieval_report.json").write_text(json.dumps(out, indent=1))
+from natspec_corpus.versioning import RunVersion
+_v = RunVersion.open(root, ["retrieval_report.json"])
+_v.write_json("retrieval_report.json", out)
+_v.record(stage="retrieval", units=out["units"])
 print(json.dumps(out, indent=1))
 PYEOF
 }
@@ -304,9 +307,12 @@ m1 = parse_rates(root, client, n=int(os.environ.get("HARNESS_N", "20")),
 print(json.dumps(m1, indent=1))
 m2 = critic_calibration(root, client)
 print(json.dumps({k: v for k, v in m2.items() if k != "rows"}, indent=1))
-(root / "harness_report.json").write_text(
-    json.dumps({"M1": m1, "M2": {k: v for k, v in m2.items() if k != "rows"}},
-               indent=1))
+from natspec_corpus.versioning import RunVersion
+_v = RunVersion.open(root, ["harness_report.json"])
+_v.write_json("harness_report.json",
+              {"M1": m1, "M2": {k: v for k, v in m2.items() if k != "rows"}})
+_v.record(stage="harness", split=os.environ.get("SPLIT", "val"),
+          models=json.loads(os.environ.get("MODELS", "{}")) or None)
 if not m1["gate_m1_met"]:
     raise SystemExit("M1 not met: a prompt parses below 95% on first attempt")
 PYEOF
@@ -382,9 +388,17 @@ man = reproduce.manifest(root, models=json.loads(os.environ.get("MODELS", "{}"))
                          configs=sorted(results), split=split)
 written = write_report(out, results=results,
                        labels={n: BY_NAME[n].label for n in results},
-                       ablations=abl, manifest=man)
-print(json.dumps({"files": sorted(written), "configs": sorted(results)},
-                 indent=1))
+                       ablations=abl, manifest=man,
+                       run_meta={"split": split,
+                                 "seeds": sorted({r["seed"] for r in rows}),
+                                 "configs": sorted(results),
+                                 "functions": len(pairs),
+                                 "models": json.loads(
+                                     os.environ.get("MODELS", "{}")) or None})
+print(json.dumps({"written": {k: v.name for k, v in sorted(written.items())},
+                  "configs": sorted(results)}, indent=1))
+print(f"\nthis run's tables are the ones named in RUNS.md; "
+      f"nothing was overwritten")
 PYEOF
 }
 
@@ -399,8 +413,11 @@ from natspec_corpus.evaluate import fields
 from natspec_corpus.experiment import load_results
 from natspec_corpus.extract import build_file
 from natspec_corpus.verify_file import strip_doc_comments, verify
-root = Path(os.environ["CORPUS"]); out = Path(os.environ["RESULTS"]) / "documented"
-out.mkdir(parents=True, exist_ok=True)
+from natspec_corpus.versioning import RunVersion
+root = Path(os.environ["CORPUS"])
+results_dir = Path(os.environ["RESULTS"])
+_v = RunVersion.open(results_dir, ["emission_report.json"], ["documented"])
+out = _v.dir("documented")
 pairs = {json.loads(l)["id"]: json.loads(l)
          for l in (root / "pairs.jsonl").read_text().splitlines() if l.strip()}
 rows = [r for r in load_results(root / "runs", os.environ.get("SPLIT", "val"))
@@ -441,10 +458,11 @@ for rel, group in sorted(by_file.items()):
     dst.parent.mkdir(parents=True, exist_ok=True)
     dst.write_text(emitted, encoding="utf-8")
     report.append(verify(rel, src, emitted, u.sources, res.version).to_dict())
-(Path(os.environ["RESULTS"]) / "emission_report.json").write_text(
-    json.dumps(report, indent=1))
+_v.write_json("emission_report.json", report)
 ok = sum(1 for r in report if r["ok"])
-print(f"{len(report)} files emitted, {ok} fully verified")
+_v.record(stage="emit", split=os.environ.get("SPLIT", "val"),
+          files=None, emitted=len(report), verified=ok)
+print(f"{len(report)} files emitted, {ok} fully verified -> {out.name}/")
 PYEOF
 }
 
