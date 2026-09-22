@@ -438,6 +438,32 @@ def test_a_tag_free_model_name_matches_the_servers_tagged_one(stub_server,
     assert "does not have" not in out.stderr
 
 
+def test_a_wrong_tag_is_refused_even_when_the_bare_name_matches(stub_server,
+                                                               sandbox):
+    """The regression that cost a GPU run.
+
+    The server has `stub:latest`. Asking for `stub:7b` shares the bare name
+    and nothing else — they would be different weights — and the earlier
+    check compared only the part before the colon, so it accepted it. The
+    run then failed on its first call and the harness reported "M1 not met:
+    a prompt parses below 95%", because zero answers and bad answers look
+    identical to that gate.
+    """
+    out = _run("--only", "harness", "--ollama", stub_server,
+               "--models", json.dumps({s: "stub:7b" for s in ALL_SLOTS}),
+               *sandbox)
+    assert out.returncode == 3, out.stdout + out.stderr
+    assert "does not have" in out.stderr
+
+
+def test_the_refusal_names_what_the_server_actually_has(stub_server, sandbox):
+    """The right tag is usually one character away from the wrong one."""
+    out = _run("--only", "harness", "--ollama", stub_server,
+               "--models", json.dumps({s: "stub:7b" for s in ALL_SLOTS}),
+               *sandbox)
+    assert "server has:" in out.stderr and "stub:latest" in out.stderr
+
+
 def test_the_isolation_options_keep_the_real_state_untouched(stub_server,
                                                             tmp_path):
     """--state is what lets these tests run a stage at all. If it were

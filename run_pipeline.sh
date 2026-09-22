@@ -229,6 +229,11 @@ run_stage() {
   printf '  %-12s running…\n' "$stage"
   rm -f "$STATE/$stage.failed"
   local log="$LOGS/$stage.log" code=0
+  # The log is appended to, not truncated, so a --background run that is
+  # resumed keeps its history. That makes `head` show the *oldest* run, which
+  # has already sent one person chasing a traceback from a previous week, so
+  # every attempt gets a banner and the failure hint below says `tail`.
+  { echo; echo "=== $(date -u +%FT%TZ)  $stage  ==="; } >>"$log"
   # Backgrounded and waited on rather than run in the foreground, so that a
   # Ctrl-C or a SIGTERM reaches the trap immediately instead of queueing
   # behind a solc invocation that has minutes left to run.
@@ -241,7 +246,8 @@ run_stage() {
     printf '  %-12s done\n' "$stage"
   else
     echo "$(date -u +%FT%TZ) exit $code" > "$STATE/$stage.failed"
-    printf '  %-12s FAILED (exit %s) — see %s\n' "$stage" "$code" "$log"
+    printf '  %-12s FAILED (exit %s) — see: tail -n 40 %s\n' \
+           "$stage" "$code" "$log"
     tail -n 12 "$log" | sed 's/^/      | /'
     return "$code"
   fi
@@ -590,9 +596,34 @@ try:
 except Exception:
     slots = []
 bare = {n.split(":")[0] for n in have}
+
+
+def resolves(want):
+    """Is `want` a model this server actually has?
+
+    A *tagged* name must match exactly. `qwen2.5-coder:7b` is not
+    `qwen2.5-coder:7b-instruct` — they are different weights — and an
+    earlier version of this check compared only the part before the colon,
+    so it waved the wrong tag through and the run died on its first call
+    with "M1 not met: a prompt parses below 95%", which is the gate
+    misreporting zero answers as bad answers. That is precisely the failure
+    this preflight exists to prevent.
+
+    A *bare* name still matches any single tag, because Ollama reports
+    `stub:latest` and people write `stub`. Refusing that would be pedantry
+    with a four-hour cost attached.
+    """
+    if want in have:
+        return True
+    return ":" not in want and want in bare
+
+
 missing = [f"{s} -> {mapping.get(s, s)}" for s in slots
-           if mapping.get(s, s) not in have
-           and mapping.get(s, s).split(":")[0] not in bare]
+           if not resolves(mapping.get(s, s))]
+if missing:
+    # Name what the server does have. "model not found" on its own sends you
+    # hunting; the list usually shows the right tag one character away.
+    missing.append("| server has: " + ", ".join(sorted(have)))
 print("; ".join(missing))
 PYEOF
 )" && HAVE_MODEL=1
