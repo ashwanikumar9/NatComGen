@@ -44,6 +44,23 @@ done
 
 STAGES=(fetch corpus index reground build run score)
 
+# What each stage was run *on*, not merely that it ran. Without this the
+# self-test's checkpoints satisfy a real invocation: `--corpus-source disl`
+# reports every stage "done, skipping" and hands back a score computed on the
+# 200-function fixture, labelled as SmartDoc. A checkpoint that ignores its
+# inputs is worse than no checkpoint, because it is confidently wrong.
+fingerprint() {
+  case "$1" in
+    fetch)    echo "smartdoc-release" ;;
+    corpus)   echo "selftest=$SELFTEST source=$CORPUS_SOURCE from=$CORPUS_FROM limit=$CORPUS_LIMIT" ;;
+    index)    echo "selftest=$SELFTEST source=$CORPUS_SOURCE from=$CORPUS_FROM limit=$CORPUS_LIMIT" ;;
+    reground) echo "selftest=$SELFTEST source=$CORPUS_SOURCE split=$SPLIT" ;;
+    build)    echo "selftest=$SELFTEST source=$CORPUS_SOURCE split=$SPLIT" ;;
+    run)      echo "selftest=$SELFTEST split=$SPLIT configs=$CONFIGS seeds=$SEEDS limit=$LIMIT models=$MODELS ollama=$OLLAMA" ;;
+    score)    echo "selftest=$SELFTEST split=$SPLIT configs=$CONFIGS seeds=$SEEDS limit=$LIMIT" ;;
+  esac
+}
+
 outputs() {
   case "$1" in
     fetch)    echo "$DATA/smartdoc/ref.txt $DATA/smartdoc/fetch_report.json";;
@@ -58,17 +75,25 @@ outputs() {
 
 have_outputs() { local o; for o in $(outputs "$1"); do [[ -e "$o" ]] || return 1; done; return 0; }
 done_marker()  { echo "$STATE/$1.done"; }
-is_done()      { [[ -f "$(done_marker "$1")" ]] && have_outputs "$1"; }
+marker_matches() {
+  local m; m="$(done_marker "$1")"
+  [[ -f "$m" ]] && [[ "$(cat "$m")" == "$(fingerprint "$1")" ]]
+}
+is_done()      { marker_matches "$1" && have_outputs "$1"; }
 
 if [[ $STATUS -eq 1 ]]; then
   printf '%-10s %s\n' stage state
   for s in "${STAGES[@]}"; do
     if is_done "$s"; then st="done"
-    elif [[ -f "$(done_marker "$s")" ]]; then st="STALE its output is gone"
+    elif marker_matches "$s"; then st="STALE its output is gone"
+    elif [[ -f "$(done_marker "$s")" ]]; then st="STALE ran on different inputs"
     else st="pending"; fi
     printf '%-10s %s\n' "$s" "$st"
   done
-  [[ -f "$DATA/coverage_${SPLIT}.json" ]] && \
+  # Only when it is current. A coverage line left over from a self-test,
+  # printed under a STALE reground, is exactly the sort of number someone
+  # writes into a thesis.
+  is_done reground && [[ -f "$DATA/coverage_${SPLIT}.json" ]] && \
     python3 -c "import json,sys;d=json.load(open(sys.argv[1]));print(f\"\ncoverage: {d['matched']} of {d['total']} ({d['coverage']*100:.1f}%)  exact {d['exact']}  fuzzy {d['fuzzy']}\")" "$DATA/coverage_${SPLIT}.json"
   exit 0
 fi
@@ -81,7 +106,7 @@ run_stage() {
   fi
   echo "== $name"
   if "$@" 2>&1 | tee "$LOGS/$name.log"; then
-    : > "$(done_marker "$name")"
+    fingerprint "$name" > "$(done_marker "$name")"
   else
     echo "!! $name failed — see $LOGS/$name.log" >&2; exit 1
   fi

@@ -180,7 +180,7 @@ def _rebuild_index(root: Path) -> Path:
     keys: List[str] = []
     for r in rows:
         for k in r:
-            if k not in ("run", "at", "files") and k not in keys:
+            if k not in ("run", "at", "files", "stage") and k not in keys:
                 keys.append(k)
 
     out = ["# Results index",
@@ -193,6 +193,12 @@ def _rebuild_index(root: Path) -> Path:
            "|---|---|" + "---|" * (len(keys) + 1)]
     for r in rows:
         cells = []
+        label = str(r.get("run"))
+        if r.get("stage"):
+            # `report` and `emit` number themselves independently — they
+            # write different files — so two rows can both be run 2. Without
+            # the stage on the row the index reads like a contradiction.
+            label = f"{r['stage']} {label}"
         for k in keys:
             v = r.get(k, "")
             if isinstance(v, (list, tuple)):
@@ -203,7 +209,7 @@ def _rebuild_index(root: Path) -> Path:
         names = sorted(set((r.get("files") or {}).values()))
         cells.append(f"{len(names)}: " + ", ".join(f"`{n}`" for n in names[:6])
                      + (" …" if len(names) > 6 else ""))
-        out.append(f"| {r.get('run')} | {r.get('at', '')} | "
+        out.append(f"| {label} | {r.get('at', '')} | "
                    + " | ".join(cells) + " |")
     out.append("")
     p = Path(root) / INDEX

@@ -305,3 +305,61 @@ def test_end_to_end_stage_build_finalise_join(corpus, tmp_path):
         if i is not None:
             seen[i] = " ".join((p.get("notice") or "").split())
     assert seen == {0: refs[0], 1: refs[1]}
+
+
+# --------------------------------------------------------------------------
+# the driver's checkpoints
+# --------------------------------------------------------------------------
+
+import subprocess
+
+BENCH = Path(__file__).resolve().parents[1] / "run_benchmark.sh"
+
+
+def _fingerprint(stage: str, **env) -> str:
+    """Ask the script itself what it would stamp for a stage."""
+    script = (f'set -a; SELFTEST=0; CORPUS_SOURCE=self; CORPUS_FROM=""; '
+              f'CORPUS_LIMIT=""; SPLIT=test; CONFIGS=C5; SEEDS=0; LIMIT=""; '
+              f'MODELS=""; OLLAMA=""; '
+              + "".join(f'{k}={v!r}; ' for k, v in env.items())
+              + f'source <(sed -n "/^fingerprint()/,/^}}/p" {BENCH}); '
+              f'fingerprint {stage}')
+    out = subprocess.run(["bash", "-c", script], capture_output=True, text=True)
+    return out.stdout.strip()
+
+
+def test_the_selftest_and_a_real_corpus_stamp_different_checkpoints():
+    """The bug this guards against handed back a fixture score as SmartDoc.
+
+    The self-test leaves a full set of `state/*.done` markers. If those
+    satisfy a real `--corpus-source disl` invocation, every stage reports
+    "done, skipping", nothing runs, and `smartdoc.md` still holds the
+    200-function fixture — labelled as the benchmark.
+    """
+    for stage in ("corpus", "index", "reground", "build", "score"):
+        a = _fingerprint(stage, SELFTEST=1)
+        b = _fingerprint(stage, SELFTEST=0, CORPUS_SOURCE="disl")
+        assert a and b and a != b, f"{stage}: {a!r} == {b!r}"
+
+
+def test_changing_the_corpus_source_invalidates_the_index():
+    assert (_fingerprint("index", CORPUS_SOURCE="disl")
+            != _fingerprint("index", CORPUS_SOURCE="sanctuary"))
+
+
+def test_changing_the_corpus_size_invalidates_the_index():
+    assert (_fingerprint("index", CORPUS_LIMIT="50000")
+            != _fingerprint("index", CORPUS_LIMIT="500000"))
+
+
+def test_the_model_is_part_of_the_run_checkpoint():
+    """Swap the model and the previous run's comments are not yours."""
+    assert (_fingerprint("run", MODELS='{"G":"a"}')
+            != _fingerprint("run", MODELS='{"G":"b"}'))
+
+
+def test_fetching_the_release_does_not_depend_on_the_corpus():
+    """SmartDoc's own files never change with the corpus you match against,
+    so re-pointing the corpus must not re-download them."""
+    assert (_fingerprint("fetch", CORPUS_SOURCE="disl")
+            == _fingerprint("fetch", CORPUS_SOURCE="self"))

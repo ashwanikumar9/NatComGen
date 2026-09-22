@@ -320,7 +320,28 @@ _v.write_json("harness_report.json",
 _v.record(stage="harness", split=os.environ.get("SPLIT", "val"),
           models=json.loads(os.environ.get("MODELS", "{}")) or None)
 if not m1["gate_m1_met"]:
-    raise SystemExit("M1 not met: a prompt parses below 95% on first attempt")
+    # Name the clause that actually failed. The gate is
+    # `all(rate >= 0.95) and not hard_failures`, and it has three quite
+    # different failure shapes: a prompt that parses badly, a handful of
+    # functions no prompt could ever answer for, and — the one that wasted
+    # an afternoon — *no calls at all*, where `all()` over an empty dict is
+    # vacuously true and the old message blamed the prompts for a wrong
+    # model name.
+    low = [f"{k} {v['first_attempt_parse_rate']:.2f}"
+           for k, v in m1["per_prompt"].items()
+           if v["first_attempt_parse_rate"] < 0.95]
+    hard = m1.get("hard_failures") or []
+    if not m1["per_prompt"]:
+        why = ["no call completed — check the model name against `ollama "
+               "list` and that Ollama is reachable at $OLLAMA"]
+    else:
+        why = []
+        if low:
+            why.append("below 95% first-attempt parse: " + ", ".join(low))
+        if hard:
+            why.append(f"{len(hard)} of {m1['sampled']} functions never "
+                       f"produced schema-valid JSON (see hard_failures)")
+    raise SystemExit("M1 not met: " + "; ".join(why))
 PYEOF
 }
 
