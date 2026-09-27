@@ -32,6 +32,10 @@ from natspec_corpus.versioning import RunVersion
 
 from . import RESULTS, RUNS
 from . import experiment as X
+from . import prompts as P
+
+#: The repository this package lives in — where models.json sits.
+REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
 def _env(name: str, default: str = "") -> str:
@@ -49,11 +53,75 @@ def _corpus(args) -> Path:
 
 
 def _models(args) -> dict:
-    raw = args.models or _env("MODELS", "{}")
+    """The slot mapping: --models, else $MODELS, else models.json at the repo
+    root, else empty.
+
+    The models.json fallback is not a convenience. An unmapped slot is sent to
+    the server as its own literal name, so a forgotten mapping does not fail
+    with "you forgot the mapping" — it fails with Ollama's 404, once per
+    function, having generated nothing. Reading a file that is sitting right
+    there removes the whole class of mistake.
+    """
+    raw = args.models or _env("MODELS")
+    if raw:
+        try:
+            return json.loads(raw)
+        except json.JSONDecodeError as e:
+            raise SystemExit(f"--models is not JSON: {e}")
+    path = REPO_ROOT / "models.json"
+    if path.exists():
+        try:
+            models = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as e:
+            raise SystemExit(f"{path} is not valid JSON: {e}")
+        print(f"models: from {path.name}")
+        return models
+    return {}
+
+
+def resolves(want: str, have: set, bare: set) -> bool:
+    """Whether the server can serve this model name.
+
+    A bare name matches any single tag the server has — `qwen2.5-coder` is
+    served by `qwen2.5-coder:7b-instruct`. A name that already carries a tag
+    must match exactly: `qwen2.5-coder:7b` is NOT `qwen2.5-coder:7b-instruct`,
+    and treating it as one is how a run spends four hours on the wrong model.
+    """
+    if want in have:
+        return True
+    return ":" not in want and want in bare
+
+
+def preflight(host: str, models: dict) -> None:
+    """Every model slot, checked against the server, before anything is spent.
+
+    `run_pipeline.sh` has done this since the beginning; running the CLI
+    directly bypassed it, which is how three functions came back as
+    `HTTP Error 404: Not Found` — Ollama's way of saying a model name is wrong.
+    """
+    import urllib.request
+    slots = sorted({pr.model for pr in P.PROMPTS})
     try:
-        return json.loads(raw)
-    except json.JSONDecodeError as e:
-        raise SystemExit(f"--models is not JSON: {e}")
+        with urllib.request.urlopen(host.rstrip("/") + "/api/tags",
+                                    timeout=5) as r:
+            have = {m.get("name", "")
+                    for m in json.loads(r.read()).get("models", [])}
+    except Exception as e:                                   # noqa: BLE001
+        raise SystemExit(f"no model server at {host}: {e}\n"
+                         f"  start ollama, or point at it with --ollama URL")
+    bare = {h.split(":", 1)[0] for h in have}
+    missing = [f"{slot} -> {models.get(slot, slot)}" for slot in slots
+               if not resolves(models.get(slot, slot), have, bare)]
+    if missing:
+        lines = "\n    ".join(missing)
+        raise SystemExit(
+            f"the model at {host} cannot serve:\n    {lines}\n"
+            f"  the server has: {', '.join(sorted(have)) or '(nothing)'}\n"
+            f"  map every slot with --models '{{\"SLOT\":\"model:tag\"}}', "
+            f"put that JSON in models.json, or pull the model.\n"
+            f"  a slot shown mapped to its own name is a slot you did not map — "
+            f"$MODELS was probably empty in this shell.")
+    print("models: " + ", ".join(f"{s}={models.get(s, s)}" for s in slots))
 
 
 # --------------------------------------------------------------------------
@@ -68,6 +136,7 @@ def cmd_run(args) -> int:
         int(_env("LIMIT")) if _env("LIMIT") else None)
     names = args.configs.split() if args.configs else None
     host = args.ollama or _env("OLLAMA", "http://localhost:11434")
+    preflight(host, models)
 
     # The call cache is shared with NatComGen on purpose: it is keyed on the
     # whole rendered request, so where ComGen issues a request C1 already

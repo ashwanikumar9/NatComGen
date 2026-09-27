@@ -10,6 +10,7 @@
 #   ./run_pipeline.sh --force            ignore checkpoints, redo everything
 #   ./run_pipeline.sh --seeds "0 1 2"    which seeds the experiments use
 #   ./run_pipeline.sh --limit 10         a few functions first, to check a model
+#   ./run_pipeline.sh --configs "G1 G3"  which ComGen configurations to run
 #   ./run_pipeline.sh --background       detach; survives a lost connection
 #   ./run_pipeline.sh --ollama URL       where the model is
 #   ./run_pipeline.sh --corpus DIR       a corpus somewhere other than data/
@@ -76,6 +77,7 @@ mkdir -p "$LOGS"
 # --- options --------------------------------------------------------------
 FORCE=0; FROM=""; ONLY=""; STATUS=0; BACKGROUND=0; SPLIT="val"; SEEDS="0 1 2"
 LIMIT=""; OLLAMA="${OLLAMA:-http://localhost:11434}"; MODELS="${MODELS:-{\}}"
+CONFIGS=""           # --configs, ComGen only; empty means every configuration
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --force)      FORCE=1 ;;
@@ -86,6 +88,7 @@ while [[ $# -gt 0 ]]; do
     --split)      SPLIT="${2:-val}"; shift ;;
     --seeds)      SEEDS="${2:-0 1 2}"; shift ;;
     --limit)      LIMIT="${2:-}"; shift ;;
+    --configs)    CONFIGS="${2:-}"; shift ;;
     --ollama)     OLLAMA="${2:-}"; shift ;;
     --models)     MODELS="${2:-}"; shift ;;
     --corpus)     CORPUS="${2:-}"; shift ;;
@@ -99,6 +102,15 @@ done
 
 CORPUS="${CORPUS:-$DATA/NatSpecGold}"
 mkdir -p "$STATE" "$LOGS" "$RESULTS"
+
+# A forgotten --models is how two runs died having generated nothing: an
+# unmapped slot is sent to the server as its own literal name, and Ollama
+# answers 404 once per function. If models.json is sitting in the repo, use it,
+# so the mapping lives in a file instead of in whichever shell you are in.
+if [[ ( -z "$MODELS" || "$MODELS" == "{}" ) && -f "$HERE/models.json" ]]; then
+  MODELS="$(cat "$HERE/models.json")"
+  echo "  models: from models.json"
+fi
 
 # ComGen last, and after `experiments` on purpose: it shares the call cache, so
 # every request C1 already issued is free by the time ComGen asks for it.
@@ -145,7 +157,7 @@ fingerprint() {
                  # The round budget is in comgen/experiment.py, so it is
                  # already hashed above. The model and the sample are inputs
                  # like any other.
-                 echo "$SPLIT $SEEDS $LIMIT $MODELS" ;;
+                 echo "$SPLIT $SEEDS $LIMIT $MODELS $CONFIGS" ;;
     comgen_report)
                  _hash_tree "$COMGEN_RUNS" ; _hash_files comgen/report.py \
                              natspec_corpus/report.py natspec_corpus/stats.py \
@@ -527,7 +539,8 @@ PYEOF
 # run by hand, given a traceback worth reading, and tested. See comgen/cli.py.
 stage_comgen() {
   "$PY" -m comgen run --corpus "$CORPUS" --split "$SPLIT" --seeds "$SEEDS" \
-        --models "$MODELS" --ollama "$OLLAMA" ${LIMIT:+--limit "$LIMIT"}
+        --models "$MODELS" --ollama "$OLLAMA" ${LIMIT:+--limit "$LIMIT"} \
+        ${CONFIGS:+--configs "$CONFIGS"}
 }
 
 stage_comgen_report() {
