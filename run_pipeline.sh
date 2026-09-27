@@ -6,6 +6,7 @@
 #   ./run_pipeline.sh --status           what is done, what is not
 #   ./run_pipeline.sh --from sigma       start again from a stage
 #   ./run_pipeline.sh --only experiments run one stage
+#   ./run_pipeline.sh --only comgen      run the ComGen architecture alone
 #   ./run_pipeline.sh --force            ignore checkpoints, redo everything
 #   ./run_pipeline.sh --seeds "0 1 2"    which seeds the experiments use
 #   ./run_pipeline.sh --limit 10         a few functions first, to check a model
@@ -48,6 +49,11 @@ LOGS="$HERE/logs"
 DATA="$HERE/data"
 SOURCES="$DATA/sources"
 RESULTS="$HERE/results"
+# ComGen keeps its own results inside its own package, deliberately: a ComGen
+# run must not be able to overwrite or extend the C0-C7 records it is being
+# compared against, and those took 35 GPU-hours.
+COMGEN_RESULTS="$HERE/comgen/results"
+COMGEN_RUNS="$COMGEN_RESULTS/runs"
 CORPUS=""            # --corpus, or $DATA/NatSpecGold; resolved after parsing
 PY="${PYTHON:-python3}"
 export PYTHONPATH="$HERE${PYTHONPATH:+:$PYTHONPATH}"
@@ -94,7 +100,12 @@ done
 CORPUS="${CORPUS:-$DATA/NatSpecGold}"
 mkdir -p "$STATE" "$LOGS" "$RESULTS"
 
-STAGES=(env tests corpus sigma retrieval harness experiments report emit)
+# ComGen last, and after `experiments` on purpose: it shares the call cache, so
+# every request C1 already issued is free by the time ComGen asks for it.
+# One line, deliberately: tests/test_bundle.py reads this list with a
+# single-line parser to check that every stage has a function, an output and a
+# line in --status. A continuation here silently disables three guards.
+STAGES=(env tests corpus sigma retrieval harness experiments report emit comgen comgen_report comgen_emit)
 
 # --- checkpoint machinery -------------------------------------------------
 # A fingerprint is a hash of everything a stage reads. Change an input and the
@@ -103,7 +114,8 @@ fingerprint() {
   local stage="$1"
   case "$stage" in
     env)         _hash_files requirements.txt setup_env.py ;;
-    tests)       _hash_files natspec_corpus/*.py tests/*.py ;;
+    tests)       _hash_files natspec_corpus/*.py tests/*.py \
+                             comgen/*.py comgen/tests/*.py ;;
     corpus)      _hash_tree "$SOURCES" ; _hash_files natspec_corpus/build.py \
                              natspec_corpus/extract.py natspec_corpus/masking.py \
                              natspec_corpus/solidity.py natspec_corpus/natspec.py \
@@ -125,6 +137,21 @@ fingerprint() {
     report)      _hash_tree "$CORPUS/runs" ; _hash_files natspec_corpus/report.py \
                              natspec_corpus/stats.py natspec_corpus/evaluate.py ;;
     emit)        _hash_tree "$CORPUS/runs" ; _hash_files natspec_corpus/emit.py \
+                             natspec_corpus/assemble.py \
+                             natspec_corpus/verify_file.py ;;
+    comgen)      _hash_files comgen/*.py natspec_corpus/prompts_v3.py \
+                             natspec_corpus/experiment.py \
+                             natspec_corpus/runner.py natspec_corpus/gate.py
+                 # The round budget is in comgen/experiment.py, so it is
+                 # already hashed above. The model and the sample are inputs
+                 # like any other.
+                 echo "$SPLIT $SEEDS $LIMIT $MODELS" ;;
+    comgen_report)
+                 _hash_tree "$COMGEN_RUNS" ; _hash_files comgen/report.py \
+                             natspec_corpus/report.py natspec_corpus/stats.py \
+                             natspec_corpus/evaluate.py ;;
+    comgen_emit) _hash_tree "$COMGEN_RUNS" ; _hash_files comgen/aggregator.py \
+                             comgen/linter_agent.py \
                              natspec_corpus/assemble.py \
                              natspec_corpus/verify_file.py ;;
     *)           echo "$stage" ;;
@@ -188,6 +215,9 @@ outputs() {
     experiments) echo "$CORPUS/runs" ;;
     report)     echo "$RESULTS/tables/main.md" "$RESULTS/manifest.json" ;;
     emit)       echo "$RESULTS/emission_report.json" ;;
+    comgen)     echo "$COMGEN_RUNS" ;;
+    comgen_report) echo "$COMGEN_RESULTS/tables/main.md" ;;
+    comgen_emit)   echo "$COMGEN_RESULTS/lint_report.json" ;;
     *)          echo "" ;;
   esac
 }
@@ -222,11 +252,11 @@ mark_done() {
 run_stage() {
   local stage="$1"; shift
   if is_done "$stage"; then
-    printf '  %-12s skipped (done %s)\n' "$stage" \
+    printf '  %-14s skipped (done %s)\n' "$stage" \
       "$(cut -d' ' -f2 < "$(marker "$stage")")"
     return 0
   fi
-  printf '  %-12s running…\n' "$stage"
+  printf '  %-14s running…\n' "$stage"
   rm -f "$STATE/$stage.failed"
   local log="$LOGS/$stage.log" code=0
   # The log is appended to, not truncated, so a --background run that is
@@ -243,21 +273,21 @@ run_stage() {
   CHILD=""
   if [[ $code -eq 0 ]]; then
     mark_done "$stage"
-    printf '  %-12s done\n' "$stage"
+    printf '  %-14s done\n' "$stage"
   else
     echo "$(date -u +%FT%TZ) exit $code" > "$STATE/$stage.failed"
-    printf '  %-12s FAILED (exit %s) — see: tail -n 40 %s\n' \
+    printf '  %-14s FAILED (exit %s) — see: tail -n 40 %s\n' \
            "$stage" "$code" "$log"
     tail -n 12 "$log" | sed 's/^/      | /'
     return "$code"
   fi
 }
 
-skip_stage() { printf '  %-12s skipped (%s)\n' "$1" "$2"; }
+skip_stage() { printf '  %-14s skipped (%s)\n' "$1" "$2"; }
 
 # --- the stages -----------------------------------------------------------
 stage_env()   { "$PY" setup_env.py --check --json "$STATE/env.json"; }
-stage_tests() { "$PY" -m pytest tests -q; }
+stage_tests() { "$PY" -m pytest tests comgen/tests -q; }
 
 stage_corpus() {
   "$PY" -m natspec_corpus.build "$SOURCES" "$CORPUS"
@@ -493,22 +523,37 @@ print(f"{len(report)} files emitted, {ok} fully verified -> {out.name}/")
 PYEOF
 }
 
+# ComGen's stages are a command line rather than a heredoc, so each one can be
+# run by hand, given a traceback worth reading, and tested. See comgen/cli.py.
+stage_comgen() {
+  "$PY" -m comgen run --corpus "$CORPUS" --split "$SPLIT" --seeds "$SEEDS" \
+        --models "$MODELS" --ollama "$OLLAMA" ${LIMIT:+--limit "$LIMIT"}
+}
+
+stage_comgen_report() {
+  "$PY" -m comgen report --corpus "$CORPUS" --split "$SPLIT" --models "$MODELS"
+}
+
+stage_comgen_emit() {
+  "$PY" -m comgen emit --corpus "$CORPUS" --split "$SPLIT" --config G1
+}
+
 # --- status ---------------------------------------------------------------
 if [[ $STATUS -eq 1 ]]; then
   echo "NatComGen pipeline — $HERE"
   echo
   for s in "${STAGES[@]}"; do
     if [[ -f "$STATE/$s.failed" ]]; then
-      printf '  %-12s FAILED   %s\n' "$s" "$(cat "$STATE/$s.failed")"
+      printf '  %-14s FAILED   %s\n' "$s" "$(cat "$STATE/$s.failed")"
     elif is_done "$s"; then
-      printf '  %-12s done     %s\n' "$s" \
+      printf '  %-14s done     %s\n' "$s" \
         "$(cut -d' ' -f2 < "$(marker "$s")")"
     elif [[ -f "$(marker "$s")" ]] && ! have_outputs "$s"; then
-      printf '  %-12s STALE    its output is gone\n' "$s"
+      printf '  %-14s STALE    its output is gone\n' "$s"
     elif [[ -f "$(marker "$s")" ]]; then
-      printf '  %-12s STALE    inputs changed since it ran\n' "$s"
+      printf '  %-14s STALE    inputs changed since it ran\n' "$s"
     else
-      printf '  %-12s pending\n' "$s"
+      printf '  %-14s pending\n' "$s"
     fi
   done
   exit 0
@@ -654,7 +699,8 @@ PYEOF
 # betrayal.
 NEEDS_MODEL=0
 for s in "${selected[@]}"; do
-  [[ "$s" == "harness" || "$s" == "experiments" ]] && NEEDS_MODEL=1
+  [[ "$s" == "harness" || "$s" == "experiments" || "$s" == "comgen" ]] \
+    && NEEDS_MODEL=1
 done
 
 if [[ $NEEDS_MODEL -eq 1 && $HAVE_MODEL -eq 1 && -n "$MODEL_CHECK" ]]; then
@@ -663,12 +709,21 @@ if [[ $NEEDS_MODEL -eq 1 && $HAVE_MODEL -eq 1 && -n "$MODEL_CHECK" ]]; then
   exit 3
 fi
 
-export CORPUS SOURCES RESULTS OLLAMA MODELS
+export CORPUS SOURCES RESULTS OLLAMA MODELS COMGEN_RESULTS COMGEN_RUNS
 for s in "${selected[@]}"; do
   case "$s" in
-    harness|experiments)
+    harness|experiments|comgen)
       if [[ $HAVE_MODEL -eq 0 ]]; then
         skip_stage "$s" "no model reachable — start ollama and rerun"
+        continue
+      fi ;;
+    comgen_report|comgen_emit)
+      if [[ ! -d "$COMGEN_RUNS" ]]; then
+        skip_stage "$s" "ComGen has not generated anything yet"
+        continue
+      fi
+      if [[ "$s" == "comgen_emit" ]] && ! compgen -G "${SOLC_SHIM_ROOT:-/nonexistent}/*/solc" >/dev/null; then
+        skip_stage "$s" "no compiler — run: $PY tools/install_solc.py"
         continue
       fi ;;
     report|emit)
@@ -688,5 +743,5 @@ for s in "${selected[@]}"; do
 done
 
 echo
-echo "done. results in $RESULTS, logs in $LOGS"
+echo "done. results in $RESULTS, ComGen's in $COMGEN_RESULTS, logs in $LOGS"
 echo "status: $0 --status"

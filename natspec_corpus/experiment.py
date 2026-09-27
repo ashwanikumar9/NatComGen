@@ -124,8 +124,18 @@ def run_config(corpus_root: Path, config: Config, client: Client, *,
                out_root: Optional[Path] = None,
                contexts: Optional[List[Context]] = None,
                limit: Optional[int] = None,
-               progress: bool = False) -> Path:
-    """One configuration, one seed, one split. Resumable like any run."""
+               progress: bool = False,
+               generate_fn: Callable[..., dict] = generate) -> Path:
+    """One configuration, one seed, one split. Resumable like any run.
+
+    `generate_fn` is the per-function pipeline. It defaults to
+    `runner.generate` — the five-call architecture these ablations were
+    designed for — and `comgen.orchestrator.generate` is passed in its place
+    to run the ComGen architecture over the same corpus, the same Σ(f)
+    filtering, the same resume-by-pair_id and the same cache. Anything with
+    runner.generate's signature will do; the record it returns is written
+    verbatim.
+    """
     contexts = contexts if contexts is not None else load_contexts(
         corpus_root, split)
     if limit:
@@ -151,8 +161,8 @@ def run_config(corpus_root: Path, config: Config, client: Client, *,
             scoped = Context(pair=ctx.pair, table=config.sigma(ctx.table),
                              unit=ctx.unit, version=ctx.version)
             try:
-                rec = generate(scoped, client, use_index,
-                               stages=list(config.stages))
+                rec = generate_fn(scoped, client, use_index,
+                                  stages=list(config.stages))
             except CorpusError as e:
                 rec = {"pair_id": ctx.pair["id"], "file": ctx.pair["file"],
                        "function": ctx.pair["name"], "split": split,
@@ -172,7 +182,9 @@ def run_matrix(corpus_root: Path, client_factory: Callable[[int], Client], *,
                names: Optional[Sequence[str]] = None, index=None,
                out_root: Optional[Path] = None,
                limit: Optional[int] = None,
-               progress: bool = False) -> Dict[str, List[Path]]:
+               progress: bool = False,
+               generate_fn: Callable[..., dict] = generate
+               ) -> Dict[str, List[Path]]:
     """Every configuration × every seed, in cache-warm order.
 
     `client_factory(seed)` supplies a client per seed, so the seed reaches the
@@ -189,7 +201,7 @@ def run_matrix(corpus_root: Path, client_factory: Callable[[int], Client], *,
             out.setdefault(config.name, []).append(
                 run_config(corpus_root, config, client, split=split, seed=seed,
                            index=index, out_root=out_root, contexts=contexts,
-                           progress=progress))
+                           progress=progress, generate_fn=generate_fn))
     return out
 
 

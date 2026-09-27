@@ -7,3 +7,8 @@ data/NatSpecGold/.compile-cache/
 data/NatSpecGold/sigma/parts/
 logs/
 results/
+
+# ComGen keeps its results inside its own package (see comgen/README.md).
+# Ignored for the same reason results/ is: they are regenerated, they are large,
+# and a run belongs to the machine that produced it.
+comgen/results/
