@@ -144,3 +144,60 @@ def test_a_malformed_models_json_says_which_file(monkeypatch, tmp_path):
     with pytest.raises(SystemExit) as e:
         cli._models(Args())
     assert "models.json" in str(e.value)
+
+
+# --------------------------------------------------------------------------
+# resuming past an error record
+# --------------------------------------------------------------------------
+
+def a_run_file(tmp_path, *records):
+    p = tmp_path / "G1" / "seed0" / "val.jsonl"
+    p.parent.mkdir(parents=True)
+    p.write_text("".join(json.dumps(r) + "\n" for r in records),
+                 encoding="utf-8")
+    return p
+
+
+def test_error_records_are_dropped_so_they_are_re_attempted(tmp_path):
+    """The trap: `run_config` resumes by skipping every pair_id already in the
+    file. A run that 404s on every function leaves a complete-looking file of
+    failures, and the next run does nothing and says `0 hits, 0 misses`."""
+    p = a_run_file(tmp_path,
+                   {"pair_id": "a", "final": "/// @notice ok"},
+                   {"pair_id": "b", "error": "ollama: HTTP Error 404"},
+                   {"pair_id": "c", "error": "ollama: HTTP Error 404"})
+    assert cli.drop_errors(tmp_path, "val") == 2
+    kept = [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
+    assert [r["pair_id"] for r in kept] == ["a"], \
+        "the comment survives, the failures do not"
+
+
+def test_dropping_errors_leaves_a_clean_file_untouched(tmp_path):
+    p = a_run_file(tmp_path, {"pair_id": "a", "final": "/// @notice ok"})
+    before = p.read_text()
+    assert cli.drop_errors(tmp_path, "val") == 0
+    assert p.read_text() == before
+
+
+def test_a_file_of_nothing_but_errors_empties_rather_than_breaking(tmp_path):
+    p = a_run_file(tmp_path, {"pair_id": "a", "error": "x"},
+                   {"pair_id": "b", "error": "y"})
+    assert cli.drop_errors(tmp_path, "val") == 2
+    assert p.read_text() == ""
+    assert cli.count_errors(tmp_path, "val") == 0
+
+
+def test_counting_errors_does_not_change_the_file(tmp_path):
+    p = a_run_file(tmp_path, {"pair_id": "a", "error": "x"},
+                   {"pair_id": "b", "final": "ok"})
+    before = p.read_text()
+    assert cli.count_errors(tmp_path, "val") == 1
+    assert p.read_text() == before
+
+
+def test_another_split_is_left_alone(tmp_path):
+    a_run_file(tmp_path, {"pair_id": "a", "error": "x"})
+    other = tmp_path / "G1" / "seed0" / "test.jsonl"
+    other.write_text(json.dumps({"pair_id": "z", "error": "x"}) + "\n")
+    assert cli.drop_errors(tmp_path, "val") == 1
+    assert other.read_text().strip(), "the test split was not asked about"

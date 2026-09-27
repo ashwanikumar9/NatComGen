@@ -128,6 +128,38 @@ def preflight(host: str, models: dict) -> None:
 # run
 # --------------------------------------------------------------------------
 
+def drop_errors(out_root: Path, split: str) -> int:
+    """Remove error records so a resume re-attempts them. Returns how many.
+
+    `run_config` resumes by skipping every `pair_id` already in the file, which
+    is right for a record that holds a comment and wrong for one that holds
+    only an error. A run that 404s on every function leaves a complete-looking
+    file of failures, and the next run reports `0 hits, 0 misses` and exits
+    having done nothing — twice, in this project's case, before anyone worked
+    out why. An error is not a result, so it is not kept by default.
+    """
+    removed = 0
+    for path in sorted(Path(out_root).rglob(f"{split}.jsonl")):
+        lines = [l for l in path.read_text(encoding="utf-8").splitlines()
+                 if l.strip()]
+        keep = [l for l in lines if not json.loads(l).get("error")]
+        if len(keep) == len(lines):
+            continue
+        removed += len(lines) - len(keep)
+        path.write_text("\n".join(keep) + ("\n" if keep else ""),
+                        encoding="utf-8")
+    return removed
+
+
+def count_errors(out_root: Path, split: str) -> int:
+    n = 0
+    for path in Path(out_root).rglob(f"{split}.jsonl"):
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if line.strip() and json.loads(line).get("error"):
+                n += 1
+    return n
+
+
 def cmd_run(args) -> int:
     root = _corpus(args)
     models = _models(args)
@@ -141,6 +173,18 @@ def cmd_run(args) -> int:
     # The call cache is shared with NatComGen on purpose: it is keyed on the
     # whole rendered request, so where ComGen issues a request C1 already
     # issued the answer is free and identical. A cache is not a result.
+    out_root = Path(args.out or RUNS)
+    if out_root.exists():
+        if args.keep_errors:
+            stale = count_errors(out_root, args.split)
+            if stale:
+                print(f"note: {stale} existing records are errors and will be "
+                      f"skipped as already done (--keep-errors)")
+        else:
+            gone = drop_errors(out_root, args.split)
+            if gone:
+                print(f"dropped {gone} error records so they are re-attempted")
+
     cache = CallCache(root / ".call-cache")
     index = build_index(root)
     contexts = load_contexts(root, args.split)
@@ -149,7 +193,7 @@ def cmd_run(args) -> int:
 
     print(f"ComGen: {len(contexts)} functions, split {args.split}, "
           f"seeds {seeds}", flush=True)
-    print(f"results -> {RUNS}", flush=True)
+    print(f"results -> {out_root}", flush=True)
 
     for config in X.ordered(names):
         for seed in seeds:
@@ -158,7 +202,8 @@ def cmd_run(args) -> int:
             print(f"== {config.name} ({config.label}) seed {seed} "
                   f"rounds={X.ROUNDS.get(config.name)}", flush=True)
             X.run_one(root, config.name, client, split=args.split, seed=seed,
-                      index=index, contexts=contexts, progress=True)
+                      index=index, contexts=contexts, progress=True,
+                      out_root=out_root)
     print(f"\ncache: {cache.hits} hits, {cache.misses} misses")
     return 0
 
@@ -242,6 +287,11 @@ def build_parser() -> argparse.ArgumentParser:
     r.add_argument("--limit")
     r.add_argument("--configs", help=f"subset of {' '.join(X.RUN_ORDER)}")
     r.add_argument("--ollama")
+    r.add_argument("--out", help="where the records go "
+                                "(default: comgen/results/runs)")
+    r.add_argument("--keep-errors", action="store_true",
+                   help="treat an existing error record as done instead of "
+                        "re-attempting it")
     r.set_defaults(fn=cmd_run)
 
     q = sub.add_parser("report", parents=[common], help="write the tables")
