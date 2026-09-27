@@ -226,3 +226,66 @@ def test_the_extra_tables_share_the_main_tables_run_number():
         assert f'"{name}"' in src, \
             f"report.write_report no longer writes {name}; _MAIN_TARGETS in " \
             f"comgen/report.py is out of step and the run numbers will drift"
+
+
+# --------------------------------------------------------------------------
+# a critic that did not run measured nothing
+#
+# From the first full run: G0 (no critic at all) and G5 (no deterministic
+# critic) both scored a perfect 1.000 defect-free rate, for the sole reason
+# that nobody looked. `evaluate.aggregate` counts a record as defect-free when
+# `gate.refined_defects` is empty, and a switched-off critic produces an empty
+# finding list. An unmeasured quantity must be blank, never perfect.
+# --------------------------------------------------------------------------
+
+def test_a_switched_off_deterministic_critic_records_no_defect_measurement():
+    rec = O.generate(F.ctx(), F.client(F.default_script(drafts=(F.DIRTY,))),
+                     None, stages=["I7", "G", "CS", "R", "J"])
+    assert rec["gate"]["measured"] is False
+    assert rec["gate"]["refined_defects"] is None
+    assert rec["gate"]["draft_defects"] is None
+    assert rec["gate"]["passed"] is None
+    assert rec["gate"]["applicable"] is False
+
+
+def test_the_defect_free_rate_excludes_a_config_that_never_measured():
+    """The bug, end to end: G0's draft is defective and its defect-free rate
+    must be absent, not 1.000."""
+    rec = O.generate(F.ctx(), F.client(F.default_script(drafts=(F.DIRTY,))),
+                     None, stages=["G", "J"])
+    s = score_record(rec, F.pair())
+    assert s["defects"] is None
+    assert "defect_free_rate" not in aggregate([s])["all"], \
+        "an unmeasured config must not appear in the defect-free column"
+
+
+def test_a_running_deterministic_critic_still_reports_normally():
+    rec = O.generate(F.ctx(), F.client(F.default_script(drafts=(F.DIRTY,),
+                                                        revisions=(F.CLEAN,))),
+                     None)
+    assert rec["gate"]["measured"] is True
+    assert rec["gate"]["refined_defects"] == []
+    assert rec["gate"]["passed"] is True
+    assert aggregate([score_record(rec, F.pair())])["all"][
+        "defect_free_rate"] == 1.0
+
+
+def test_the_loop_table_blanks_columns_nothing_measured():
+    def rec_for(stages, **kw):
+        r = O.generate(F.ctx(), F.client(F.default_script(**kw)), None,
+                       stages=stages)
+        r.update(config="G0" if stages == ["G", "J"] else "G5", seed=0)
+        return r
+
+    no_critic = rec_for(["G", "J"], drafts=(F.DIRTY,))
+    headers, rows = R.rounds_rows([no_critic])
+    row = dict(zip(headers, rows[0]))
+    assert row["clean at r0"] == "—", "no critic ran; nothing was judged"
+    assert row["still blocking"] == "—"
+
+    semantic_only = rec_for(["I7", "G", "CS", "R", "J"], drafts=(F.DIRTY,))
+    headers, rows = R.rounds_rows([semantic_only])
+    row = dict(zip(headers, rows[0]))
+    assert row["clean at r0"] != "—", "the semantic critic did judge the draft"
+    assert row["still blocking"] == "—", \
+        "only the deterministic critic decides what is blocking"

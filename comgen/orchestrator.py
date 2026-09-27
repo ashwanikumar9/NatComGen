@@ -191,15 +191,25 @@ def generate(ctx, client: Client, index=None, *,
     # labels `score.judge` produces for C1. `gate_kept_draft` keeps its
     # meaning: the first candidate was never improved on.
     det_best = best["deterministic"]
+    # A critic that did not run measured nothing, and an empty finding list
+    # from a critic that was switched off must NOT read as "no defects" —
+    # `evaluate.aggregate` counts a record as defect-free when this list is
+    # empty, so an ablation without the deterministic critic would score a
+    # perfect 1.000 defect-free rate for the sole reason that nobody looked.
+    # None is the honest value; `aggregate` already excludes it.
+    det_ran = det_best.get("ran", True)
     rec["gate"] = {
-        "passed": best["blocking"] == 0,
+        "passed": (best["blocking"] == 0) if det_ran else None,
+        "measured": det_ran,
         "compiles": det_best.get("detail", {}).get("compiles"),
         "tags_emitted": det_best.get("detail", {}).get("tags_emitted"),
-        "draft_defects": [f["text"] for f
-                          in attempts[0]["deterministic"]["findings"]],
-        "refined_defects": [f["text"] for f in det_best["findings"]],
+        "draft_defects": ([f["text"] for f
+                           in attempts[0]["deterministic"]["findings"]]
+                          if det_ran else None),
+        "refined_defects": ([f["text"] for f in det_best["findings"]]
+                            if det_ran else None),
         "reasons": [f["why"] or f["text"] for f in det_best["findings"]],
-        "applicable": det_best.get("applicable", True),
+        "applicable": det_ran and det_best.get("applicable", True),
     }
     rec["gate_kept_draft"] = best["round"] == 0
 

@@ -53,8 +53,22 @@ def _fmt(v, places: int = 3) -> str:
     return str(v)
 
 
+def _critics_ran(rec: dict) -> tuple:
+    """(deterministic ran, semantic ran) on this record's first round."""
+    r0 = (rec.get("rounds") or [{}])[0]
+    return (bool(r0.get("deterministic", {}).get("ran")),
+            bool(r0.get("semantic", {}).get("ran")))
+
+
 def rounds_rows(rows: Sequence[dict]) -> tuple:
-    """Per configuration: how far the loop went and what it changed."""
+    """Per configuration: how far the loop went and what it changed.
+
+    A column is blank where nothing measured it. G0 runs no critic at all, so
+    "clean at round 0" would otherwise read 1.000 — every draft passes a
+    critique that never happened — and G5 has no deterministic critic, so
+    "still blocking" would read 0.000 for the same empty reason. A blank is a
+    true statement about what was measured; a 1.000 is not.
+    """
     headers = ["config", "n", "rounds allowed", "mean rounds", "clean at r0",
                "improved by revision", "best round > 0", "still blocking"]
     out: List[List[str]] = []
@@ -65,21 +79,28 @@ def rounds_rows(rows: Sequence[dict]) -> tuple:
             continue
         n = len(group)
         used = [r.get("rounds_used", 1) for r in group]
-        # Clean on the first critique: the draft needed nothing. This is the
-        # number that says how often the loop was not needed at all.
-        clean0 = sum(1 for r in group
+
+        # Any critic at all is enough to say whether a draft was clean.
+        judged = [r for r in group if any(_critics_ran(r))]
+        # Only the deterministic critic decides whether a defect is blocking.
+        measured = [r for r in group
+                    if (r.get("gate") or {}).get("passed") is not None]
+
+        clean0 = sum(1 for r in judged
                      if (r.get("rounds") or [{}])[0].get("total") == 0)
-        later = sum(1 for r in group if r.get("best_round", 0) > 0)
+        later = sum(1 for r in judged if r.get("best_round", 0) > 0)
         improved = 0
-        for r in group:
+        for r in judged:
             rs = r.get("rounds") or []
             if len(rs) > 1 and rs[r.get("best_round", 0)]["total"] < rs[0]["total"]:
                 improved += 1
-        blocking = sum(1 for r in group
-                       if not (r.get("gate") or {}).get("passed", True))
+        blocking = sum(1 for r in measured if not r["gate"]["passed"])
+
+        share = lambda k, of: _fmt(k / len(of)) if of else "—"
         out.append([name, n, group[0].get("rounds_allowed", "—"),
-                    _fmt(sum(used) / n, 2), _fmt(clean0 / n), _fmt(improved / n),
-                    _fmt(later / n), _fmt(blocking / n)])
+                    _fmt(sum(used) / n, 2), share(clean0, judged),
+                    share(improved, judged), share(later, judged),
+                    share(blocking, measured)])
     return headers, out
 
 
