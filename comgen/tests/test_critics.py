@@ -172,3 +172,86 @@ def test_feedback_puts_must_fix_first_and_labels_it_non_negotiable():
 def test_feedback_says_so_when_there_is_nothing_to_fix():
     g = C.merge(C.deterministic(F.ctx(), F.CLEAN), C.not_run(C.SEMANTIC))
     assert "unchanged" in g.feedback()
+
+
+# --------------------------------------------------------------------------
+# the wording of a MUST FIX item
+#
+# From the first real run: `update()` takes no arguments and returns nothing.
+# The draft documented a parameter and a return. The param complaint was fixed
+# in one round; the return complaint — worded "more @return tags than the
+# declaration returns" — was answered twice with `@return null` and the round
+# budget ran out. A complaint the reviser cannot act on costs a whole round, so
+# the declaration's own counts go into the wording.
+# --------------------------------------------------------------------------
+
+def nullary_pair() -> dict:
+    """`update()` — no parameters, no return values."""
+    p = dict(F.pair())
+    p.update(name="update", signature="update()",
+             code="function update() external { last = block.timestamp; }",
+             params={}, returns=[])
+    return p
+
+
+def nullary_ctx():
+    from natspec_corpus.runner import Context
+    return Context(pair=nullary_pair(), table=F.table(), unit=None,
+                   version=None)
+
+
+def test_a_return_tag_on_a_void_function_is_told_to_delete_it():
+    v = C.deterministic(nullary_ctx(),
+                        "/// @notice Records the current timestamp now.\n"
+                        "/// @return null")
+    why = next(f.why for f in v.findings if f.text == "return_extra")
+    assert "returns nothing" in why
+    assert "delete" in why
+    assert "placeholder" in why, \
+        "the model answered the old wording with `@return null` twice"
+
+
+def test_a_param_tag_on_a_nullary_function_says_it_takes_none():
+    v = C.deterministic(nullary_ctx(),
+                        "/// @notice Records the current timestamp now.\n"
+                        "/// @param bandData the data from Band")
+    why = next(f.why for f in v.findings
+               if f.text == "param_unknown:bandData")
+    assert "takes no parameters" in why
+    assert "delete" in why
+
+
+def test_an_unknown_param_names_the_ones_the_declaration_has():
+    v = C.deterministic(F.ctx(),
+                        "/// @notice Adds two unsigned integers and returns "
+                        "the sum.\n"
+                        "/// @param a the first addend\n"
+                        "/// @param b the second addend\n"
+                        "/// @param c a third one\n"
+                        "/// @return the sum of the two addends")
+    why = next(f.why for f in v.findings if f.text == "param_unknown:c")
+    assert "`c`" in why
+    assert "a, b" in why, "name the real parameters, not just the wrong one"
+
+
+def test_a_missing_return_says_how_many_are_declared():
+    v = C.deterministic(F.ctx(), F.ONE_DEFECT_A)
+    why = next(f.why for f in v.findings if f.text == "return_missing")
+    assert "returns 1 value" in why
+
+
+def test_the_complaint_and_the_check_use_the_same_parameter_names():
+    """The complaint names the declaration's parameters, and it must take them
+    from the same place `judge_text` does — otherwise the critic can report a
+    set of parameters the check never used."""
+    from natspec_corpus.gate import _declared_params
+    v = C.deterministic(F.ctx(), "/// @notice Adds them up somehow here.")
+    missing = sorted(f.subject for f in v.findings
+                     if f.text.startswith("param_missing"))
+    assert missing == sorted(_declared_params(F.pair()))
+
+
+def test_the_reviser_is_told_not_to_leave_a_placeholder():
+    from comgen import prompts as P
+    assert "@return null" in P.REVISER.system
+    assert "DELETED, never filled in" in P.REVISER.system

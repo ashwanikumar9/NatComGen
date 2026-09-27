@@ -173,7 +173,12 @@ Order of repair:
   4. A high-value omission is added only if it is genuinely high value: a
      revert condition the caller must satisfy, an ordering hazard, a
      non-obvious effect. Do not pad.
-  5. Change nothing else. Rewriting a sentence nobody objected to loses
+  5. A tag the declaration does not support is DELETED, never filled in.
+     `@return null`, `@param x none`, an empty tag — each of these still
+     carries the tag, so it still fails, and you will be told the same thing
+     again next round. If the function returns nothing, the comment has no
+     @return line.
+  6. Change nothing else. Rewriting a sentence nobody objected to loses
      information and makes your change impossible to review.
 
 Deleting an unsupported claim is always acceptable. A shorter accurate comment

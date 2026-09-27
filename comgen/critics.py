@@ -129,7 +129,7 @@ def deterministic(ctx, candidate: str) -> CriticVerdict:
         kind, _, subject = label.partition(":")
         v.findings.append(Finding(
             source=DETERMINISTIC, text=label, severity="blocking",
-            why=_explain(kind, subject), subject=subject or None))
+            why=_explain(kind, subject, ctx.pair), subject=subject or None))
 
     if ctx.unit is None:
         v.applicable = False
@@ -164,8 +164,44 @@ def deterministic(ctx, candidate: str) -> CriticVerdict:
     return v
 
 
-def _explain(kind: str, subject: str) -> str:
-    """Plain wording for a defect label, for the generator to act on."""
+def _explain(kind: str, subject: str, pair: dict) -> str:
+    """Plain wording for a defect label, for the generator to act on.
+
+    The declaration's own parameter and return counts go into the wording,
+    because a complaint the reviser cannot act on costs a whole round. Observed
+    on the first real run: `return_extra` on a function returning nothing was
+    reported as "more @return tags than the declaration returns", and the model
+    answered it twice with `@return null` before the budget ran out. "This
+    function returns nothing — delete the @return tag" is the same finding, and
+    it is actionable.
+
+    The parameter names come from `gate._declared_params`, the same function
+    `judge_text` checks against, so the complaint can never name a different
+    set of parameters than the check used.
+    """
+    from natspec_corpus.gate import _declared_params
+    params = _declared_params(pair)
+    n_ret = len(pair.get("returns") or [])
+    plural = "value" if n_ret == 1 else "values"
+
+    if kind == "param_unknown":
+        if not params:
+            return (f"the declaration takes no parameters, so @param "
+                    f"{subject} cannot be right — delete the tag")
+        return (f"the declaration has no parameter `{subject}`; its "
+                f"parameters are {', '.join(params)} — delete the tag or fix "
+                f"the name")
+    if kind == "return_extra":
+        if not n_ret:
+            return ("this function returns nothing, so it must carry no "
+                    "@return tag at all — delete it. Do not leave a "
+                    "placeholder in its place")
+        return (f"the declaration returns {n_ret} {plural}; the comment has "
+                f"more @return tags than that — delete the extra ones")
+    if kind == "return_missing":
+        return (f"the declaration returns {n_ret} {plural} and the comment "
+                f"documents fewer — add a @return for each")
+
     return {
         "no_text": "the comment has no prose at all: no @notice and no @dev",
         "text_short": "the prose is too short to say anything",
@@ -173,10 +209,6 @@ def _explain(kind: str, subject: str) -> str:
         "placeholder": "the comment contains a TODO/TBD placeholder",
         "param_missing": f"@param {subject} is declared but not documented",
         "param_empty": f"@param {subject} is present but has no description",
-        "param_unknown": f"@param {subject} documents an argument the "
-                         f"declaration does not have",
-        "return_missing": "a declared return value is not documented",
-        "return_extra": "more @return tags than the declaration returns",
         "return_empty": "a @return tag has no description",
     }.get(kind, kind)
 
