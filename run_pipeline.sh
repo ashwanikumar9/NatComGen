@@ -109,7 +109,10 @@ mkdir -p "$STATE" "$LOGS" "$RESULTS"
 # so the mapping lives in a file instead of in whichever shell you are in.
 if [[ ( -z "$MODELS" || "$MODELS" == "{}" ) && -f "$HERE/models.json" ]]; then
   MODELS="$(cat "$HERE/models.json")"
-  echo "  models: from models.json"
+  # Not indented: --status prints two-space-indented lines for stages, and a
+  # line that looks like a stage but carries no state is how a stage gets
+  # quietly skipped. tests/test_bundle.py checks for exactly that.
+  echo "models: from models.json"
 fi
 
 # ComGen last, and after `experiments` on purpose: it shares the call cache, so

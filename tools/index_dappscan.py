@@ -110,21 +110,50 @@ def find_roots(dappscan: Path, specs: Set[str],
                         score[prefix][full[: -(len(rest) + 1)]] += 1
     out: Dict[str, List[Tuple[Path, int]]] = {}
     for prefix, counter in score.items():
-        chosen: List[Tuple[Path, int]] = []
-        covered: Set[str] = set()
-        # Greedy by marginal contribution: a second tree earns its place only
-        # by holding files the first one does not.
+        # One tree per Solidity version, best first. Selecting purely by file
+        # count picks whichever release the DAppSCAN projects happened to
+        # vendor most — OpenZeppelin 4.2.0, which requires ^0.8.0 — and mixing
+        # it into a 0.6 project yields 35 syntax errors and no fact tables.
+        # This corpus spans 0.6.10 through 0.8.13, so it needs one of each.
+        best: Dict[object, Tuple[Path, int]] = {}
         for root, _ in counter.most_common():
-            rests = {r for r in by_prefix[prefix]
-                     if (Path(root) / r).is_file()} - covered
+            rests = {r for r in by_prefix[prefix] if (Path(root) / r).is_file()}
             if not rests:
                 continue
-            chosen.append((Path(root), len(rests)))
-            covered |= rests
-            if len(chosen) >= keep or covered >= by_prefix[prefix]:
-                break
+            ver = tree_version(Path(root), sorted(rests))
+            if ver not in best or len(rests) > best[ver][1]:
+                best[ver] = (Path(root), len(rests))
+        chosen = sorted(best.values(), key=lambda x: -x[1])[:keep]
         if chosen:
             out[prefix] = chosen
+    return out
+
+
+_VERSION_CACHE: Dict[str, object] = {}
+
+
+def tree_version(root: Path, rests=(), cap: int = 6) -> object:
+    """The (major, minor) a donor tree's own sources declare, or None.
+
+    Read from the files we already know are present rather than by walking the
+    tree: `rglob` over a few hundred candidate projects is minutes of I/O for
+    an answer the first handful of files gives.
+    """
+    from natspec_corpus.vendor import floor
+    key = str(root)
+    if key in _VERSION_CACHE:
+        return _VERSION_CACHE[key]
+    seen = collections.Counter()
+    paths = [root / r for r in list(rests)[:cap]]
+    if not paths:
+        paths = [p for i, p in enumerate(root.rglob("*.sol")) if i < cap]
+    for path in paths:
+        if path.is_file():
+            v = floor(path.read_bytes()[:800].decode("utf-8", "replace"))
+            if v:
+                seen[v] += 1
+    out = seen.most_common(1)[0][0] if seen else None
+    _VERSION_CACHE[key] = out
     return out
 
 
@@ -169,7 +198,9 @@ def main(argv=None) -> int:
     print("donor trees chosen:")
     for prefix, trees in sorted(roots.items()):
         for root, n in trees:
-            print(f"  {prefix:42} {n:3} files   {root.name[:60]}")
+            v = tree_version(root)   # cached from selection
+            tag = f"solidity {v[0]}.{v[1]}" if v else "version unknown"
+            print(f"  {prefix:38} {n:3} files  {tag:16} {root.name[:44]}")
 
     def satisfied(spec: str) -> bool:
         prefix, rest = split_spec(spec)
@@ -189,7 +220,7 @@ def main(argv=None) -> int:
     if args.out.exists():
         shutil.rmtree(args.out)
     args.out.mkdir(parents=True)
-    prefixes, provenance, total = {}, {}, 0
+    prefixes, provenance, versions, total = {}, {}, {}, 0
     used_names: Dict[str, str] = {}
     for prefix, trees in sorted(roots.items()):
         order: List[str] = []
@@ -214,12 +245,15 @@ def main(argv=None) -> int:
                 total += len(copied)
             order.append(f"{name}/")
             provenance[f"{prefix}[{i}]"] = str(root)
+            v = tree_version(root)
+            if v:
+                versions.setdefault(f"{name}/", []).append(list(v))
         if order:
             prefixes[prefix] = order
 
     (args.out / INDEX).write_text(json.dumps(
         {"prefixes": prefixes, "provenance": provenance,
-         "files": total,
+         "versions": versions, "files": total,
          "note": "Dependency-only sources. Never scored, never pairs, never "
                  "retrieval units, never @inheritdoc donors. See "
                  "natspec_corpus/vendor.py."}, indent=1), encoding="utf-8")

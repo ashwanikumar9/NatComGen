@@ -230,6 +230,8 @@ def load_contexts(corpus_root: Path, split: str,
         if with_units:
             rel = pair["file"]
             if rel not in units:
+                if _vendor is not None:
+                    _vendor.for_pragma(read(rel) or "")
                 u = unit_for(rel, read, _resolve)
                 res = compile_unit(u, cache_dir=corpus_root / ".compile-cache")
                 units[rel] = (u, res.version) if res.ok else (None, None)

@@ -32,15 +32,28 @@ from __future__ import annotations
 
 import json
 import posixpath
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Set
 
-#: Vendored files live under this prefix in a unit's source map, so a glance at
-#: a unit says which of its sources came from the corpus and which did not.
+#: Retained only so an older index or caller does not break; vendored sources
+#: are NOT keyed by it. See `resolve` for why.
 PREFIX = "_vendor/"
 
 INDEX = "index.json"
+
+
+def floor(text: str) -> Optional[tuple]:
+    """The (major, minor) a pragma admits, for matching a tree to a project.
+
+    Crude on purpose. `^0.8.0`, `>=0.8.4 <0.9.0` and `0.8.13` all give (0, 8),
+    which is the only distinction that matters here: OpenZeppelin v3 is a
+    0.6/0.7 library and v4 is a 0.8 one, and mixing them into one compilation
+    unit produces exactly the syntax errors this was written to stop.
+    """
+    m = re.search(r"pragma\s+solidity[^;]*?(\d+)\.(\d+)", text or "")
+    return (int(m.group(1)), int(m.group(2))) if m else None
 
 
 @dataclass
@@ -62,6 +75,11 @@ class Vendor:
     corpus_files: Set[str] = field(default_factory=set)
     used: Set[str] = field(default_factory=set)
     provenance: Dict[str, str] = field(default_factory=dict)
+    #: tree -> the (major, minor) its own sources declare.
+    versions: Dict[str, list] = field(default_factory=dict)
+    #: The (major, minor) of the file currently being resolved for, set by
+    #: `for_pragma`. Trees matching it are tried first.
+    target: Optional[tuple] = None
 
     @classmethod
     def load(cls, vendor_root: Path,
@@ -76,7 +94,30 @@ class Vendor:
                     for k, v in (data.get("prefixes") or {}).items()}
         return cls(root=vendor_root, prefixes=prefixes,
                    corpus_files=set(corpus_files or ()),
-                   provenance=dict(data.get("provenance") or {}))
+                   provenance=dict(data.get("provenance") or {}),
+                   versions={k: [tuple(v) for v in vs]
+                             for k, vs in (data.get("versions") or {}).items()})
+
+    def for_pragma(self, source: str) -> "Vendor":
+        """This same vendor, preferring trees written for `source`'s pragma.
+
+        A compilation unit has to satisfy every pragma in it with one compiler.
+        A 0.6 project handed OpenZeppelin v4 has no such compiler, and the
+        result is a page of syntax errors rather than an honest version
+        complaint — which is exactly how the first attempt at this failed.
+        """
+        self.target = floor(source)
+        return self
+
+    def _trees(self, prefix: str) -> List[str]:
+        trees = self.prefixes[prefix]
+        if self.target is None:
+            return trees
+        fit = [t for t in trees if self.target in (self.versions.get(t) or [])]
+        # Trees of unknown version keep their place behind the matching ones:
+        # an unknown may still work, a known mismatch will not.
+        rest = [t for t in trees if t not in fit]
+        return fit + rest
 
     # -- resolution ------------------------------------------------------
     def resolve(self, from_rel: str, spec: str) -> Optional[str]:
@@ -100,23 +141,37 @@ class Vendor:
         # 2. A package import with a remapping. Longest prefix wins, so
         #    `@openzeppelin/contracts-upgradeable/` is not shadowed by
         #    `@openzeppelin/contracts/`.
+        # 3. A package import the vendor tree can satisfy. The specifier is
+        #    returned UNCHANGED, so it becomes the key under which the file
+        #    appears in the unit's source map — and solc resolves imports by
+        #    matching that literal string against its own `sources` keys. Key
+        #    it as `_vendor/...` instead and solc reports `Source
+        #    "@openzeppelin/..." not found`, which is how the first version of
+        #    this failed. Returning the specifier also makes a vendored file's
+        #    own relative imports land on the right package path:
+        #    `@oz/contracts/token/ERC20/IERC20.sol` + `../../utils/Context.sol`
+        #    normalises to `@oz/contracts/utils/Context.sol`.
+        if self._file_for(spec) is not None:
+            self.used.add(spec)
+            return spec
+        return None
+
+    def _file_for(self, spec: str) -> Optional[Path]:
+        """The vendored file backing a package specifier, if any."""
         for prefix in sorted(self.prefixes, key=len, reverse=True):
             if not spec.startswith(prefix):
                 continue
             rest = spec[len(prefix):]
-            for tree in self.prefixes[prefix]:
-                target = PREFIX + tree + rest
-                if (self.root / target[len(PREFIX):]).is_file():
-                    self.used.add(spec)
-                    return target
+            for tree in self._trees(prefix):
+                path = self.root / tree / rest
+                if path.is_file():
+                    return path
         return None
 
     # -- reading ---------------------------------------------------------
     def read(self, rel: str) -> Optional[str]:
-        if not rel.startswith(PREFIX):
-            return None
-        path = self.root / rel[len(PREFIX):]
-        if not path.is_file():
+        path = self._file_for(rel)
+        if path is None:
             return None
         # Bytes, decoded without newline translation: `Path.read_text` opens in
         # universal-newline mode, which turns \r\n into \n and shortens the
@@ -134,11 +189,19 @@ class Vendor:
     # -- reporting -------------------------------------------------------
     def report(self) -> dict:
         return {"root": str(self.root),
-                "prefixes": dict(self.prefixes),
+                "prefixes": {k: list(v) for k, v in self.prefixes.items()},
+                "versions": {k: [list(x) for x in v]
+                             for k, v in self.versions.items()},
                 "specs_remapped": sorted(self.used),
                 "provenance": self.provenance}
 
+    def is_vendored(self, rel: str) -> bool:
+        return (rel not in self.corpus_files
+                and any(rel.startswith(p) for p in self.prefixes))
 
-def sources_from_vendor(unit) -> List[str]:
+
+def sources_from_vendor(unit, vendor: Optional[Vendor] = None) -> List[str]:
     """Which of a unit's sources are stand-ins. Provenance for one table."""
+    if vendor is not None:
+        return sorted(r for r in unit.sources if vendor.is_vendored(r))
     return sorted(r for r in unit.sources if r.startswith(PREFIX))

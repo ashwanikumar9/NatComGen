@@ -136,6 +136,10 @@ def build(corpus_root: Path, *, limit: Optional[int] = None,
     written: List[dict] = []
 
     for i, rel in enumerate(scored, 1):
+        if vendor is not None:
+            # A unit must satisfy every pragma in it with one compiler, so the
+            # stand-in has to match the project it is standing in for.
+            vendor.for_pragma(read(rel) or "")
         unit = unit_for(rel, read, resolve)
         if not unit.complete:
             report["unresolved_imports"] += 1
@@ -148,7 +152,7 @@ def build(corpus_root: Path, *, limit: Optional[int] = None,
         report["compiled"] += 1
         if vendor:
             # Provenance: how many of this unit's sources were stand-ins.
-            report["vendored_files_used"] += len(_from_vendor(unit))
+            report["vendored_files_used"] += len(_from_vendor(unit, vendor))
         report["compilers"][res.version] = \
             report["compilers"].get(res.version, 0) + 1
 
