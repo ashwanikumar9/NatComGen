@@ -21,6 +21,7 @@ from typing import Dict, List, Optional
 
 from . import sigma as _sigma
 from .compile import compile_unit, unit_for
+from .vendor import Vendor as _Vendor, sources_from_vendor as _from_vendor
 from .errors import CorpusError
 from .sigma import FactTable, SigmaError, analyze
 
@@ -82,7 +83,8 @@ def load_pairs(root: Path) -> Dict[str, Dict[int, dict]]:
 
 
 def build(corpus_root: Path, *, limit: Optional[int] = None,
-          cache_dir: Optional[Path] = None, resume: bool = True) -> dict:
+          cache_dir: Optional[Path] = None, resume: bool = True,
+          vendor_root: Optional[Path] = None) -> dict:
     """Σ(f) for every scored file in the corpus.
 
     `resume` keeps one shard per analysed file under `sigma/parts/`, so a run
@@ -105,6 +107,19 @@ def build(corpus_root: Path, *, limit: Optional[int] = None,
         p = contracts / rel
         return p.read_text(encoding="utf-8") if p.is_file() else None
 
+    # Dependency-only stand-ins, when a vendor tree has been built. They let a
+    # file whose npm packages are absent compile, and so acquire a fact table.
+    # They are never scored, never pairs, never exemplars, never @inheritdoc
+    # donors — `pairs.jsonl` is not read or written here. See vendor.py.
+    vendor_root = Path(vendor_root) if vendor_root is not None else \
+        corpus_root.parent / "vendor"
+    on_disk = {str(q.relative_to(contracts)).replace("\\", "/")
+               for q in contracts.rglob("*.sol")}
+    vendor = _Vendor.load(vendor_root, on_disk)
+    resolve = vendor.resolve if vendor else None
+    if vendor:
+        read = vendor.wrap(read)
+
     scored = sorted(r for r, m in manifest.items() if m["role"] == "scored")
     if limit:
         scored = scored[:limit]
@@ -116,11 +131,12 @@ def build(corpus_root: Path, *, limit: Optional[int] = None,
         "pairs_total": sum(len(v) for f, v in pairs.items() if f in set(scored)),
         "pairs_with_sigma": 0,
         "failures": {}, "compilers": {},
+        "vendored": bool(vendor), "vendored_files_used": 0,
     }
     written: List[dict] = []
 
     for i, rel in enumerate(scored, 1):
-        unit = unit_for(rel, read)
+        unit = unit_for(rel, read, resolve)
         if not unit.complete:
             report["unresolved_imports"] += 1
             continue
@@ -130,6 +146,9 @@ def build(corpus_root: Path, *, limit: Optional[int] = None,
             report["failures"][rel] = f"compile: {res.error}"
             continue
         report["compiled"] += 1
+        if vendor:
+            # Provenance: how many of this unit's sources were stand-ins.
+            report["vendored_files_used"] += len(_from_vendor(unit))
         report["compilers"][res.version] = \
             report["compilers"].get(res.version, 0) + 1
 
@@ -165,6 +184,8 @@ def build(corpus_root: Path, *, limit: Optional[int] = None,
 
     from . import checks
     checks.run_sigma_checks(corpus_root, written)
+    if vendor:
+        report["vendor"] = vendor.report()
     report["invariants"] = "all hold"
 
     # Never overwrite a populated table set with an empty one. Twice now a

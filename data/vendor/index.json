@@ -1,0 +1,54 @@
+{
+ "prefixes": {
+  "@openzeppelin/contracts-upgradeable/": [
+   "openzeppelin-contracts-upgradeable-0/"
+  ],
+  "@openzeppelin/contracts/": [
+   "openzeppelin-contracts-0/",
+   "openzeppelin-contracts-1/"
+  ],
+  "@ribbon-finance/rvol/": [
+   "ribbon-finance-rvol-0/",
+   "ribbon-finance-rvol-1/"
+  ],
+  "@uma/core/": [
+   "uma-core-0/"
+  ],
+  "eip4337/": [
+   "eip4337-0/",
+   "eip4337-1/"
+  ],
+  "element-finance/": [
+   "element-finance-0/"
+  ],
+  "hardhat/": [
+   "hardhat-0/"
+  ],
+  "notional/": [
+   "notional-0/"
+  ],
+  "opyn-gamma/": [
+   "opyn-gamma-0/"
+  ],
+  "yield-fydai/": [
+   "yield-fydai-0/"
+  ]
+ },
+ "provenance": {
+  "@openzeppelin/contracts-upgradeable/[0]": "/sessions/rcw-01gklbze4w2schbwwwzygegq/mnt/contracts/Chainsulting-Global Rockstar/openzeppelin-contracts-upgradeable-master/contracts",
+  "@openzeppelin/contracts/[0]": "/sessions/rcw-01gklbze4w2schbwwwzygegq/mnt/contracts/Chainsulting-SWAPP Protocol-project2/openzeppelin-contracts-4.2.0/contracts",
+  "@openzeppelin/contracts/[1]": "/sessions/rcw-01gklbze4w2schbwwwzygegq/mnt/contracts/HAECHI_AUDIT-Fractional/contracts-37f9428fe9a5596c93ed9dfccb7be41afc0646ee/src/OpenZeppelin",
+  "@ribbon-finance/rvol/[0]": "/sessions/rcw-01gklbze4w2schbwwwzygegq/mnt/contracts/BlockSec-blocksec_aloe_1.1_signed/aloe-blend-fd1635d8928c74ed24550d3f0d9a63f284a7f872",
+  "@ribbon-finance/rvol/[1]": "/sessions/rcw-01gklbze4w2schbwwwzygegq/mnt/contracts/consensys-Aave_Protocol_V2/aave-protocol-v2-f756f44a8d6a328cd545335e46e7128939db88c4",
+  "@uma/core/[0]": "/sessions/rcw-01gklbze4w2schbwwwzygegq/mnt/contracts/openzeppelin-UMA/protocol-1631ef7ad29aaeba756ef3b9a01c667e1343df85/packages/core",
+  "eip4337/[0]": "/sessions/rcw-01gklbze4w2schbwwwzygegq/mnt/contracts/Coinfabrik-Woonkly Security Audit (DEX STAKE)/STAKESmartContractPreRelease-main",
+  "eip4337/[1]": "/sessions/rcw-01gklbze4w2schbwwwzygegq/mnt/contracts/consensys-0x_Exchange_v4/protocol-475b608338561a1dce3199bfb9fb59ee9372149b/contracts/exchange/contracts/src/interfaces",
+  "element-finance/[0]": "/sessions/rcw-01gklbze4w2schbwwwzygegq/mnt/contracts/Runtime_V\u0435rification-ElementFinance/elf-contracts-b9ab6095a211ccb81941a5104c581e3564a97502",
+  "hardhat/[0]": "/sessions/rcw-01gklbze4w2schbwwwzygegq/mnt/contracts/Coinspect-Liquity Audit/dev-dd7f59b980e7dab1cebc84c017db3a2c4caa522c/packages/contracts/contracts/Dependencies",
+  "notional/[0]": "/sessions/rcw-01gklbze4w2schbwwwzygegq/mnt/contracts/PeckShield-dodo/dodo-smart-contract-d74964085d115022635dbfa07cf8396b8f450ab0/contracts",
+  "opyn-gamma/[0]": "/sessions/rcw-01gklbze4w2schbwwwzygegq/mnt/contracts/Trail_of_Bits-Opyn-Gamma-Protocol/GammaProtocol-9a75da2ad8beefdaa4caa97d17799b50552ca450",
+  "yield-fydai/[0]": "/sessions/rcw-01gklbze4w2schbwwwzygegq/mnt/contracts/Trail_of_Bits-YieldProtocol/fyDai-4422fda75931f2bfea49f5041ec90dc026e5c03d"
+ },
+ "files": 95,
+ "note": "Dependency-only sources. Never scored, never pairs, never retrieval units, never @inheritdoc donors. See natspec_corpus/vendor.py."
+}

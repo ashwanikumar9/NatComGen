@@ -125,10 +125,18 @@ class Unit:
         }
 
 
-def unit_for(entry: str, read: "callable") -> Unit:
+def unit_for(entry: str, read: "callable", resolve: "callable" = None) -> Unit:
     """Build the unit for `entry`. `read(rel) -> str | None` supplies content;
     returning None means the file is not in the corpus, which makes the import
-    unresolved rather than raising — an npm package is a normal condition."""
+    unresolved rather than raising — an npm package is a normal condition.
+
+    `resolve(from_rel, spec) -> str | None` maps an import specifier to a path
+    the reader understands. It defaults to `closure.resolve_import`, which
+    handles relative imports and rejects everything else. `vendor.Vendor.resolve`
+    is passed in its place to satisfy package imports from a local dependency
+    tree; see `vendor.py` for why that is legitimate and what keeps it honest.
+    """
+    resolve = resolve or resolve_import
     sources: Dict[str, str] = {}
     unresolved: List[str] = []
     stack = [entry]
@@ -142,7 +150,7 @@ def unit_for(entry: str, read: "callable") -> Unit:
             continue
         sources[rel] = content
         for spec in _imports(content):
-            tgt = resolve_import(rel, spec)
+            tgt = resolve(rel, spec)
             if tgt is None:
                 unresolved.append(spec)
             else:

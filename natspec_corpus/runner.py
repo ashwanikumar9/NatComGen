@@ -204,6 +204,19 @@ def load_contexts(corpus_root: Path, split: str,
         p = contracts / rel
         return p.read_text(encoding="utf-8") if p.is_file() else None
 
+    # The same dependency-only stand-ins Σ(f) was built against. Without this
+    # the two disagree: a file could have a fact table — built with vendored
+    # dependencies — and still arrive here with `unit=None`, so the
+    # deterministic critic's compiler half would silently sit out on exactly
+    # the functions the vendoring was meant to reach. See vendor.py.
+    from .vendor import Vendor as _Vendor
+    _on_disk = {str(q.relative_to(contracts)).replace("\\", "/")
+                for q in contracts.rglob("*.sol")}
+    _vendor = _Vendor.load(corpus_root.parent / "vendor", _on_disk)
+    _resolve = _vendor.resolve if _vendor else None
+    if _vendor:
+        read = _vendor.wrap(read)
+
     units: Dict[str, Any] = {}
     out: List[Context] = []
     for line in (corpus_root / "pairs.jsonl").read_text(
@@ -217,7 +230,7 @@ def load_contexts(corpus_root: Path, split: str,
         if with_units:
             rel = pair["file"]
             if rel not in units:
-                u = unit_for(rel, read)
+                u = unit_for(rel, read, _resolve)
                 res = compile_unit(u, cache_dir=corpus_root / ".compile-cache")
                 units[rel] = (u, res.version) if res.ok else (None, None)
             ctx.unit, ctx.version = units[rel]

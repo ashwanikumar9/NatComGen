@@ -135,7 +135,12 @@ fingerprint() {
                              natspec_corpus/closure.py natspec_corpus/projects.py ;;
     sigma)       _hash_files "$CORPUS/pairs.jsonl" "$CORPUS/manifest.json" \
                              natspec_corpus/sigma.py natspec_corpus/compile.py \
-                             natspec_corpus/sigma_build.py ;;
+                             natspec_corpus/sigma_build.py \
+                             natspec_corpus/vendor.py
+                 # The dependency-only stand-ins are an input to Σ(f): add a
+                 # package and files that could not compile now can, so the
+                 # stage must re-run. See natspec_corpus/vendor.py.
+                 _hash_tree "$HERE/data/vendor" ;;
     retrieval)   _hash_files "$CORPUS/sigma/sigma.jsonl" \
                              "$CORPUS/index_allowlist.json" \
                              natspec_corpus/retrieve.py natspec_corpus/views.py ;;
