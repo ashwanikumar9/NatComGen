@@ -40,12 +40,15 @@ class Call:
     prompt_tokens: int = 0
     completion_tokens: int = 0
     cached: bool = False
+    #: A bookkeeping field was absent and filled with its empty value; the
+    #: substantive answer came from the model. See `repair`.
+    repaired: bool = False
 
     def summary(self) -> dict:
         return {"prompt_id": self.prompt_id, "model": self.model,
                 "attempts": self.attempts,
                 "first_attempt_parsed": self.first_attempt_parsed,
-                "seconds": round(self.seconds, 3),
+                "seconds": round(self.seconds, 3), "repaired": self.repaired,
                 "prompt_tokens": self.prompt_tokens,
                 "completion_tokens": self.completion_tokens,
                 "cached": self.cached}
@@ -116,6 +119,51 @@ def extract_json(text: str) -> Optional[dict]:
 
 def missing_fields(data: dict, schema: dict) -> List[str]:
     return [k for k in schema.get("required", []) if k not in data]
+
+
+#: The one field whose absence cannot be repaired. Deliberately just this:
+#: the observed failure is a written comment discarded for want of a flag, and
+#: `natspec` is the only field that is unambiguously *the answer*. Widening
+#: this to the critic's `defects` or the intent reader's `purpose` would turn
+#: "the model failed" into "the model found nothing", which is a worse error
+#: than losing the record — an empty critique reads as a clean comment.
+PRIMARY = ("natspec",)
+
+#: What an absent bookkeeping field becomes. Only fields with an unambiguous
+#: empty value, so a repaired reply is indistinguishable downstream from one
+#: that said "nothing to add".
+DEFAULTS = {
+    "claims": [], "changed": False, "removed": [], "added": [],
+    "used_examples": False, "conflicts_with_intent": [],
+    "addressed": [], "declined": [],
+}
+
+
+def repair(data: Optional[dict], schema: dict) -> Optional[dict]:
+    """Fill absent bookkeeping fields when the substantive answer is present.
+
+    Measured on the C-series: 8% of records were lost to
+    `no schema-valid JSON after 3 attempts` on the refiner, and the replies
+    were not malformed — they carried a perfectly good `natspec` and omitted
+    `changed` or `claims`. Discarding a written comment because the model did
+    not also report whether it had changed anything is a bookkeeping failure
+    being charged to the experiment.
+
+    A field is only ever filled when it has an unambiguous empty value and the
+    prompt's substantive field is present. A reply with no `natspec` is still
+    a failure, and `repaired` is recorded on the call so the rate is visible
+    rather than hidden.
+    """
+    if not isinstance(data, dict):
+        return None
+    required = schema.get("required", [])
+    primary = [k for k in required if k in PRIMARY]
+    if not primary or any(k not in data for k in primary):
+        return None
+    absent = [k for k in required if k not in data]
+    if not absent or any(k not in DEFAULTS for k in absent):
+        return None
+    return {**{k: DEFAULTS[k] for k in absent}, **data}
 
 
 # --------------------------------------------------------------------------
@@ -244,8 +292,10 @@ class Client:
 
         started = time.time()
         first_ok = False
+        repaired = False
         last_text = ""
         data: Optional[dict] = None
+        last_parsed: Optional[dict] = None
         attempt = 0
         for attempt in range(1, self.max_attempts + 1):
             req = json.loads(json.dumps(request))
@@ -254,10 +304,17 @@ class Client:
             out = self.backend.complete(req)
             last_text = out["text"]
             parsed = extract_json(last_text)
+            if parsed is not None:
+                last_parsed = parsed
             if parsed is not None and not missing_fields(parsed, prompt.schema):
                 data = parsed
                 first_ok = attempt == 1
                 break
+        if data is None:
+            # Last resort, and only for an absent bookkeeping field on a reply
+            # that carries the substantive answer. Recorded, never silent.
+            data = repair(last_parsed, prompt.schema)
+            repaired = data is not None
         if data is None:
             raise LLMError(
                 f"{prompt.id}: no schema-valid JSON after {self.max_attempts} "
@@ -265,7 +322,7 @@ class Client:
 
         c = Call(prompt_id=prompt.id, model=request["model"], data=data,
                  raw=last_text, attempts=attempt, first_attempt_parsed=first_ok,
-                 seconds=time.time() - started,
+                 repaired=repaired, seconds=time.time() - started,
                  prompt_tokens=out.get("prompt_tokens", 0),
                  completion_tokens=out.get("completion_tokens", 0))
         if self.cache is not None:
@@ -281,11 +338,13 @@ class Client:
         out: Dict[str, Dict[str, float]] = {}
         for c in self.log:
             s = out.setdefault(c.prompt_id, {"calls": 0, "first_ok": 0,
-                                             "seconds": 0.0, "cached": 0})
+                                             "seconds": 0.0, "cached": 0,
+                                             "repaired": 0})
             s["calls"] += 1
             s["first_ok"] += int(c.first_attempt_parsed)
             s["seconds"] += c.seconds
             s["cached"] += int(c.cached)
+            s["repaired"] += int(c.repaired)
         for s in out.values():
             n = max(s["calls"], 1)
             s["first_attempt_parse_rate"] = s["first_ok"] / n
