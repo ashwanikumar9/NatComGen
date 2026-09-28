@@ -147,3 +147,39 @@ def test_an_empty_prediction_is_counted_not_skipped():
     s = E.evaluate(["the amount to add"], [""])
     assert s["empty_hypotheses"] == 1
     assert s["METEOR"] == 0.0
+
+
+# --------------------------------------------------------------------------
+# BLEU-1 and BLEU-2 beside BLEU-4
+#
+# On the first real comparison, BLEU-4 read 0.00 for four of sixteen
+# configurations. Those had not produced nothing — they had produced no 4-gram
+# appearing in any reference, and one zero factor zeroes a geometric mean. On
+# short NatSpec comments over a few dozen functions that is routine.
+# --------------------------------------------------------------------------
+
+def test_bleu_4_is_zero_when_no_four_gram_matches_but_bleu_1_is_not():
+    refs = ["the amount of stablecoin to deposit in the pool"]
+    hyps = ["amount stablecoin pool deposit the of to in"]      # same words
+    s = E.evaluate(refs, hyps)
+    assert s["BLEU-4"] == 0.0
+    assert s["BLEU-1"] > 50.0, "every unigram matches"
+    assert s["BLEU-2"] < s["BLEU-1"]
+
+
+def test_all_three_bleus_agree_on_a_perfect_prediction():
+    refs = ["the amount of stablecoin to deposit in the pool"]
+    s = E.evaluate(refs, list(refs))
+    assert s["BLEU-1"] == pytest.approx(100.0, abs=0.01)
+    assert s["BLEU-2"] == pytest.approx(100.0, abs=0.01)
+    assert s["BLEU-4"] == pytest.approx(100.0, abs=0.01)
+
+
+def test_bleu_4_still_equals_the_geometric_mean_of_its_parts():
+    """A property worth pinning: the reported BLEU-4 is the geometric mean of
+    B1..B4, so a reader can reconstruct it from the parts."""
+    refs = ["the amount of stablecoin to deposit in the pool now"]
+    hyps = ["the amount of stablecoin to deposit in the vault now"]
+    s = E.evaluate(refs, hyps)
+    geo = (s["B1"] * s["B2"] * s["B3"] * s["B4"]) ** 0.25
+    assert s["BLEU-4"] == pytest.approx(geo, rel=0.01)

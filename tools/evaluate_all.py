@@ -47,6 +47,7 @@ from typing import Dict, List, Optional, Sequence, Tuple
 HERE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(HERE))
 
+from benchmarks.smartdoc.bleu import corpus_bleu                           # noqa: E402
 from natspec_corpus.evaluate import reference_fields, rouge_l               # noqa: E402
 from natspec_corpus.report import markdown_table                           # noqa: E402
 from tools.bleu_table import load, matched_ids                             # noqa: E402
@@ -187,8 +188,24 @@ def texts(rows: Sequence[dict], pairs: Dict[str, dict], config: str,
     return refs, hyps
 
 
+def bleu_at(refs: Sequence[str], hyps: Sequence[str],
+            weights: Sequence[float]) -> float:
+    r = [[x.split()] for x in refs]
+    h = [x.split() for x in hyps]
+    return round(corpus_bleu(r, h, tuple(weights)) * 100, 2)
+
+
 def evaluate(refs: Sequence[str], hyps: Sequence[str]) -> dict:
     out = dict(bleu_score(list(refs), list(hyps)))
+    # BLEU-1 and BLEU-2 alongside BLEU-4, because BLEU-4 goes to exactly zero
+    # the moment a configuration produces no 4-gram that appears in any
+    # reference — the geometric mean has a zero factor in it. On short NatSpec
+    # comments over a few dozen functions that is a routine event, and a 0.00
+    # then reads as "produced nothing" when it means "matched no 4-gram". The
+    # code-summarisation literature reports BLEU-1/BLEU-2 for this reason.
+    out["BLEU-1"] = out["B1"]
+    out["BLEU-2"] = bleu_at(refs, hyps, (0.5, 0.5, 0, 0))
+    out["BLEU-4"] = out["BLEU"]
     n = max(len(hyps), 1)
     out["ROUGE-1"] = round(sum(rouge_n(h, r, 1)
                                for r, h in zip(refs, hyps)) / n * 100, 2)
@@ -241,8 +258,8 @@ def main(argv=None) -> int:
     if not ids:
         raise SystemExit("no function was completed by every configuration")
 
-    headers = ["system", "config", "what it removes", "n", "BLEU", "B1", "B2",
-               "B3", "B4", "ROUGE-1", "ROUGE-2", "ROUGE-L", "METEOR"]
+    headers = ["system", "config", "what it removes", "n", "BLEU-1", "BLEU-2",
+               "BLEU-4", "ROUGE-1", "ROUGE-2", "ROUGE-L", "METEOR"]
     table, results = [], {}
     for system, rows, order, by_name in loaded:
         for name in order:
@@ -253,17 +270,29 @@ def main(argv=None) -> int:
             results[f"{system}/{name}"] = s
             table.append([system, name, by_name[name].label, s["n"]]
                          + [f"{s[k]:.2f}" for k in
-                            ("BLEU", "B1", "B2", "B3", "B4", "ROUGE-1",
+                            ("BLEU-1", "BLEU-2", "BLEU-4", "ROUGE-1",
                              "ROUGE-2", "ROUGE-L", "METEOR")])
 
     scope = "all seeds pooled" if args.all_seeds else f"seed {args.seed}"
     print(f"# Whole-comment evaluation — {args.split}, {scope}, "
           f"{len(ids)} functions common to every configuration\n")
     print(markdown_table(headers, table))
-    print("\nBLEU is corpus BLEU-4 (pooled counts, one brevity penalty) — the "
-          "figure comparable to a published one. ROUGE and METEOR are "
-          "per-comment and averaged. METEOR is exact+stem matching with no "
-          "WordNet stage; see the module docstring.")
+    print("\nBLEU is corpus-level: n-gram counts pooled over the split, one "
+          "brevity penalty. ROUGE and METEOR are per-comment and averaged. "
+          "METEOR is exact+stem matching with no WordNet stage; see the "
+          "module docstring.")
+    zeros = [k for k, v in results.items() if v["BLEU-4"] == 0.0]
+    if zeros:
+        print(f"\nBLEU-4 is 0.00 for {', '.join(zeros)}: those produced no "
+              f"4-gram appearing in any reference, and one zero factor zeroes "
+              f"the geometric mean. Read BLEU-1 and BLEU-2 for those rows — "
+              f"they are not empty outputs.")
+    if len(ids) < 50:
+        print(f"\nWARNING: only {len(ids)} functions are common to every "
+              f"configuration, so every row above rests on {len(ids)} "
+              f"comments. The binding constraint is whichever run covered "
+              f"fewest functions — check `wc -l` across both run trees. At "
+              f"this n, BLEU-4 in particular is not a stable statistic.")
     if args.check_nltk:
         first = loaded[0]
         refs, hyps = texts(first[1], pairs, first[2][0], ids, seeds)
