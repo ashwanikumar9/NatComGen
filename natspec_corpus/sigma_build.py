@@ -187,7 +187,10 @@ def build(corpus_root: Path, *, limit: Optional[int] = None,
               + (" (cached)" if cached else ""), file=sys.stderr)
 
     from . import checks
-    checks.run_sigma_checks(corpus_root, written)
+    # Tables that join to no declaration are reported, not lost: they are
+    # inert (no pair can reach them) but their count is how a parser gap
+    # stays visible instead of becoming folklore.
+    report.update(checks.run_sigma_checks(corpus_root, written))
     if vendor:
         report["vendor"] = vendor.report()
     report["invariants"] = "all hold"

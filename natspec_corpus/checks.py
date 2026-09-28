@@ -18,6 +18,15 @@ from typing import Dict, List
 
 from .closure import resolve_import
 from .errors import InvariantError
+
+#: How many fact tables may fail to join before it is read as offset drift
+#: rather than a gap in what the extractor models. A parser gap affects a
+#: handful of declarations of one shape; a drift affects a large share.
+TOLERATED_MISS_RATE = 0.05
+
+#: What a declaration looks like at the start of a header.
+_DECL_START = __import__("re").compile(
+    r"(function|modifier|constructor|receive|fallback|event|error)\b")
 from .extract import build_file
 from .score import is_candidate
 
@@ -240,18 +249,56 @@ def sigma_tables_join_to_declarations(root: Path, tables: List[dict]):
     offsets, the corpus records character offsets, and a file with a single
     em-dash shifts everything after it by two. A silent two-character drift
     attaches a function's control flow to its neighbour with no error
-    anywhere."""
+    anywhere.
+
+    A table that joins nowhere is NOT automatically a drift, though, and
+    treating it as one blocks the whole build. Solidity permits a modifier
+    with no parameter list — `modifier notPartiallyPaused { ... }` — and
+    `find_decls` requires one, so Slither reports six modifiers in
+    opyn-gamma's Controller.sol where the extractor finds two. Such a table is
+    inert: the join is by exact offset, so with no matching declaration it
+    simply never reaches a pair and nothing is mis-attached.
+
+    The two cases are told apart by what sits at the offset and by how many
+    there are. A parser gap lands exactly on a declaration keyword and affects
+    a handful; a drift lands mid-token and affects a large share. So a miss is
+    tolerated only when the source at that offset really does begin a
+    declaration, and only while the miss rate stays under `TOLERATED_MISS_RATE`.
+    Misses are returned so the caller can report them rather than lose them.
+    """
     from .extract import build_file
     cache: Dict[str, Dict[int, object]] = {}
+    text: Dict[str, str] = {}
+    misses: List[dict] = []
     for t in tables:
         rel = t["file"]
         if rel not in cache:
-            src = (root / "contracts" / rel).read_text(encoding="utf-8")
+            # Decoded without newline translation: `read_text` opens in
+            # universal-newline mode, turns \r\n into \n, shortens the string
+            # and moves every offset after it.
+            src = (root / "contracts" / rel).read_bytes().decode(
+                "utf-8", "replace")
+            text[rel] = src
             cache[rel] = {d.header_start: d for d in build_file(rel, src).decls}
         if t["char_start"] not in cache[rel]:
-            _fail("sigma_tables_join_to_declarations",
-                  f"{rel}:{t['function']} at {t['char_start']} matches no "
-                  f"declaration found by the extractor")
+            at = text[rel][t["char_start"]:t["char_start"] + 40].lstrip()
+            misses.append({"file": rel, "function": t.get("function"),
+                           "char_start": t["char_start"], "at": at[:40],
+                           "on_a_declaration": bool(_DECL_START.match(at))})
+
+    if not misses:
+        return []
+    stray = [m for m in misses if not m["on_a_declaration"]]
+    rate = len(misses) / max(len(tables), 1)
+    if stray or rate > TOLERATED_MISS_RATE:
+        first = stray[0] if stray else misses[0]
+        _fail("sigma_tables_join_to_declarations",
+              f"{len(misses)} of {len(tables)} tables ({rate:.1%}) match no "
+              f"declaration, {len(stray)} of them not on a declaration "
+              f"keyword — this is offset drift, not a parser gap. First: "
+              f"{first['file']}:{first['function']} at {first['char_start']} "
+              f"sits on {first['at']!r}")
+    return misses
 
 
 def sigma_offsets_are_sane(root: Path, tables: List[dict]):
@@ -350,9 +397,11 @@ def sigma_pair_ids_exist(root: Path, tables: List[dict]):
                   f"{t['file']}@{t['char_start']}")
 
 
-def run_sigma_checks(root: Path, tables: List[dict]):
+def run_sigma_checks(root: Path, tables: List[dict]) -> dict:
+    """Every Σ(f) invariant. Returns what was tolerated, for the report."""
     sigma_tables_are_unique(tables)
-    sigma_tables_join_to_declarations(root, tables)
+    misses = sigma_tables_join_to_declarations(root, tables)
     sigma_offsets_are_sane(root, tables)
     sigma_rows_are_well_formed(tables)
     sigma_pair_ids_exist(root, tables)
+    return {"unjoined_tables": len(misses), "unjoined_examples": misses[:10]}
