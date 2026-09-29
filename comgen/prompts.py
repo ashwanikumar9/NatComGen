@@ -49,13 +49,78 @@ from natspec_corpus import prompts_v3 as _P
 
 # Reused verbatim. Same object, same id, same cache line.
 FUNCTION_INTENT = _P.INTENT_REASONER          # L7
-GENERATOR = _P.GENERATOR                      # L1b
+GENERATOR = _P.GENERATOR                      # L1b (patched below)
 SEMANTIC_CRITIC = _P.SEMANTIC_CRITIC          # L2
 
 #: The ClaimVerifier under its architectural name. `replace` keeps the id — and
 #: therefore the cache line — while the agent label changes.
 JUDGE = replace(_P.CLAIM_VERIFIER, agent="Judge")   # L8
 
+
+
+# =============================================================================
+# ACCESS: the one amendment ComGen makes to the shared writing rules
+# =============================================================================
+#
+# The shared rule says a name is not a fact and gives `onlyOwner` as the
+# example. It is right that a modifier's name does not establish WHO may call
+# the function. It is wrong to conclude that nothing may be said: the modifier
+# is written on the declaration and is already an F* row, so that the function
+# is GATED is a fact. Refusing to state it drops something the corpus itself
+# documents on roughly half of its gated functions, and it is the single piece
+# of a NatSpec comment a downstream reader most needs.
+#
+# The amendment is patched into ComGen's own copies of the prompts. It is NOT
+# written back into `natspec_corpus.prompts_v3`, so NatComGen's prompts, and
+# therefore its cached calls and its published numbers, are untouched.
+
+_OLD_RULE_HEAD = "  - A NAME IS NOT A FACT."
+
+ACCESS_RULE = """\
+  - A NAME IS NOT A FACT, WITH ONE EXCEPTION. A modifier called onlyOwner does
+    not establish WHO may call the function — only an R* row or a CFG guard
+    does. But an F* modifier row does establish THAT the function is gated, and
+    you must say so. Write it as one clause naming both the restriction and the
+    modifier it comes from: "Can only be called by the owner (`onlyOwner`)
+    [F7]". Name the principal only when the modifier's name carries one; when
+    it does not, name the modifier alone: "Callable only when `auth` permits
+    [F4]". Put this clause in @dev unless the function has no @dev, and never
+    write it twice.
+  - Not every modifier restricts the caller. `nonReentrant` and `lock` are
+    reentrancy guards; `onlyLive`, `whenNotPaused` and `onlyOrchestrated` gate
+    on contract state, not on who is calling. Do not describe those as caller
+    restrictions.
+  - The rest of the name rule stands: parameter names implying units, function
+    names implying intent, and variable names implying ownership are still not
+    facts."""
+
+
+def _extract_old_rule(text: str) -> str:
+    """The shared bullet, taken from the rendered prompt rather than retyped.
+
+    Retyping it would mean a silent no-op the day someone reflows that
+    paragraph, and a prompt patch that quietly does nothing is worse than no
+    patch: every number downstream would be attributed to a change that never
+    reached the model.
+    """
+    start = text.index(_OLD_RULE_HEAD)
+    nxt = text.index("\n  - ", start + len(_OLD_RULE_HEAD))
+    return text[start:nxt]
+
+
+def with_access_rule(prompt):
+    """A copy of `prompt` whose writing rules permit stating the gate."""
+    old = _extract_old_rule(prompt.system)
+    patched = prompt.system.replace(old, ACCESS_RULE, 1)
+    if patched == prompt.system:                       # pragma: no cover
+        raise RuntimeError(
+            f"the access rule did not apply to prompt {prompt.id}: the shared "
+            f"writing rules have changed and the patch is now a no-op")
+    return replace(prompt, system=patched)
+
+
+WRITING_RULES_ACCESS = WRITING_RULES.replace(
+    _extract_old_rule(WRITING_RULES + "\n  - "), ACCESS_RULE, 1)
 
 # =============================================================================
 # L9 — CONTRACT INTENT                                     one call per file
@@ -188,7 +253,7 @@ beats a longer one with an invented detail.
 
 {NATSPEC_RULES}
 
-{WRITING_RULES}
+{WRITING_RULES_ACCESS}
 
 If there is nothing to fix, return the comment unchanged and set `changed` to
 false. That is a legitimate answer and the loop will stop.""",
@@ -259,3 +324,11 @@ __all__ = ["FUNCTION_INTENT", "GENERATOR", "SEMANTIC_CRITIC", "JUDGE",
            "CONTRACT_INTENT", "REVISER", "PROMPTS", "BY_ID", "STAGES",
            "ALL_STAGES", "render", "sigma_block", "exemplar_block",
            "EVIDENCE_LEGEND"]
+
+
+# Applied last, so `with_access_rule` and the prompt objects both exist. The
+# generator is the only agent that writes a comment from scratch; the reviser
+# carries the rules through its own f-string above.
+GENERATOR = with_access_rule(GENERATOR)
+PROMPTS = tuple(GENERATOR if p.id == GENERATOR.id else p for p in PROMPTS)
+BY_ID = {p.id: p for p in PROMPTS}

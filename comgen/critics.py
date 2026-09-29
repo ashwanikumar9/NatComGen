@@ -33,6 +33,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 
 from natspec_corpus.gate import judge_text, solc_emits
+from natspec_corpus import access as _access
 from natspec_corpus.llm import Client
 
 from . import prompts as P
@@ -131,6 +132,8 @@ def deterministic(ctx, candidate: str) -> CriticVerdict:
             source=DETERMINISTIC, text=label, severity="blocking",
             why=_explain(kind, subject, ctx.pair), subject=subject or None))
 
+    v.findings.extend(_access_findings(ctx, candidate))
+
     if ctx.unit is None:
         v.applicable = False
         v.detail = {"compiles": None, "tags_emitted": None,
@@ -163,6 +166,46 @@ def deterministic(ctx, candidate: str) -> CriticVerdict:
                     "userdoc"))
     return v
 
+
+
+def _access_findings(ctx, candidate: str) -> List[Finding]:
+    """Caller gates the comment must state, and restrictions it must not invent.
+
+    This runs with or without a compilation unit, because a modifier is written
+    on the declaration: it is readable from the function text alone. That is
+    the whole reason this check is deterministic rather than a job for the
+    semantic critic.
+
+    The two directions carry different severities on purpose. A gate the
+    comment omits is blocking — it is a fact of the declaration, and the
+    corpus documents it on about half of its gated functions. A restriction the
+    comment asserts without a gate is reported but does not block, because a
+    contract may gate in the body through a helper this check cannot see, and
+    thirteen correct comments in NatSpecGold do exactly that. Blocking on a
+    check with known false positives would make the loop delete true sentences.
+    """
+    out: List[Finding] = []
+    table = getattr(ctx, "table", None)
+    for gate in _access.undeclared(ctx.pair, table, candidate):
+        who = (f"only {gate.principal} may call it" if gate.principal
+               else f"the `{gate.name}` gate must permit the caller")
+        cite = f" [{gate.fact_id}]" if gate.fact_id else ""
+        out.append(Finding(
+            source=DETERMINISTIC, text=f"access_undeclared:{gate.name}",
+            severity="blocking", subject=gate.name,
+            why=f"the declaration carries `{gate.name}`{cite}, so this "
+                f"function is access-gated and the comment does not say so. "
+                f"State it once, in @dev: that {who}, naming the modifier it "
+                f"comes from."))
+    for word in _access.invented(ctx.pair, table, candidate):
+        out.append(Finding(
+            source=DETERMINISTIC, text=f"access_invented:{word}",
+            severity="high", subject=word,
+            why=f"the comment restricts the caller to the {word}, but no "
+                f"modifier or caller guard on this function shows that. "
+                f"Remove the claim, or keep it only if an R* row compares "
+                f"msg.sender."))
+    return out
 
 def _explain(kind: str, subject: str, pair: dict) -> str:
     """Plain wording for a defect label, for the generator to act on.
@@ -338,7 +381,17 @@ def merge(det: CriticVerdict, sem: CriticVerdict) -> GroupVerdict:
     """One verdict from both critics. Deterministic findings are final."""
     g = GroupVerdict(deterministic_applicable=det.applicable,
                      semantic_ran=sem.ran)
-    g.must_fix = list(det.findings)
+
+    # Structural defects are must-fix; access findings are not. Both reach the
+    # reviser, because `clean` is false while either is present — so the loop
+    # still runs a round and the generator still gets the feedback. What
+    # differs is the bookkeeping: `blocking` counts only the structural ones,
+    # so the defect-free rate and the still-blocking share keep the meaning
+    # they had before this check existed, and the reported numbers stay
+    # comparable across the change. Promote these to must-fix only once access
+    # coverage is a reported result in its own right.
+    g.must_fix = [f for f in det.findings if not f.text.startswith("access_")]
+    access = [f for f in det.findings if f.text.startswith("access_")]
 
     required = {f.subject for f in det.findings
                 if f.subject and f.text.split(":", 1)[0] in _REQUIRING}
@@ -359,6 +412,6 @@ def merge(det: CriticVerdict, sem: CriticVerdict) -> GroupVerdict:
 
     keep.sort(key=lambda f: (0 if f.text.startswith("CONTRADICTED") else 1,
                              _RANK.get(f.severity, 9)))
-    g.should_fix = keep
+    g.should_fix = access + keep
     g.omissions = list(sem.detail.get("missing_high_value_facts") or [])
     return g

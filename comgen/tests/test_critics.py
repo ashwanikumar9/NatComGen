@@ -255,3 +255,32 @@ def test_the_reviser_is_told_not_to_leave_a_placeholder():
     from comgen import prompts as P
     assert "@return null" in P.REVISER.system
     assert "DELETED, never filled in" in P.REVISER.system
+
+
+def test_access_findings_steer_the_loop_without_counting_as_blocking():
+    """The loop must act on them; the defect-free rate must not change meaning.
+
+    `clean` false means another round runs and the reviser sees the finding.
+    `blocking` unchanged means `main.md`'s defect-free rate and the
+    still-blocking share stay comparable to the runs made before this check
+    existed.
+    """
+    from comgen import critics as C
+    det = C.CriticVerdict(name=C.DETERMINISTIC, ran=True, findings=[
+        C.Finding(source=C.DETERMINISTIC, text="access_undeclared:onlyOwner",
+                  severity="blocking", why="…", subject="onlyOwner")])
+    sem = C.not_run(C.SEMANTIC)
+    g = C.merge(det, sem)
+    assert g.blocking == 0
+    assert g.total == 1
+    assert not g.clean
+    assert g.should_fix[0].text == "access_undeclared:onlyOwner"
+
+
+def test_structural_findings_still_block():
+    from comgen import critics as C
+    det = C.CriticVerdict(name=C.DETERMINISTIC, ran=True, findings=[
+        C.Finding(source=C.DETERMINISTIC, text="param_missing:amount",
+                  severity="blocking", why="…", subject="amount")])
+    g = C.merge(det, C.not_run(C.SEMANTIC))
+    assert g.blocking == 1 and not g.clean

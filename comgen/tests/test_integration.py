@@ -176,7 +176,16 @@ def test_comgen_reuses_the_shared_prompt_ids_so_the_cache_still_hits():
     assert P.JUDGE.id == V.CLAIM_VERIFIER.id == "L8"
     assert P.JUDGE.agent == "Judge"
     assert P.JUDGE.system == V.CLAIM_VERIFIER.system
-    assert P.GENERATOR is V.GENERATOR
+    # The generator is deliberately NOT shared any more: ComGen amends the
+    # "a name is not a fact" rule so a caller gate may be stated, and that
+    # amendment must not reach NatComGen's prompts, its cache lines, or its
+    # published numbers. Everything else is still the same object.
+    assert P.GENERATOR is not V.GENERATOR
+    assert P.GENERATOR.id == V.GENERATOR.id == "L1b"
+    assert "WITH ONE EXCEPTION" in P.GENERATOR.system
+    assert "WITH ONE EXCEPTION" not in V.GENERATOR.system
+    assert P.FUNCTION_INTENT is V.INTENT_REASONER
+    assert P.SEMANTIC_CRITIC is V.SEMANTIC_CRITIC
     assert P.SEMANTIC_CRITIC is V.SEMANTIC_CRITIC
     assert {p.id for p in P.PROMPTS} == {"L9", "L7", "L1b", "L2", "R1", "L8"}
 
