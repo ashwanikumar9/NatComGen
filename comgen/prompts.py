@@ -95,6 +95,22 @@ ACCESS_RULE = """\
     facts."""
 
 
+#: Measured on the training split by `functionWise.conventions`, and narrowed
+#: to the two mismatches that measurement actually found. Length is NOT among
+#: them: the generated comments already sit at 0.88-1.00x of gold's median in
+#: every field, so a budget would have bought nothing and risked the brevity
+#: penalty. The rules below are only what the corpus and the runs disagree on.
+STYLE_RULES = """\
+  - DO NOT PREPEND AN ARTICLE BY REFLEX. Just under half of @param and @return
+    descriptions in this corpus open with a bare noun — "amount of tokens to
+    deposit", "address of the vault" — and the runs open with "The" on 77-86%
+    of them. Use "The" only where the phrase needs it.
+  - Never open @dev with "The". No @dev in this corpus does.
+  - @dev carries caller obligations and revert conditions: who may call this,
+    and what makes it revert. Write one whenever the evidence shows either.
+    Do not use it to restate what @notice already said."""
+
+
 def _extract_old_rule(text: str) -> str:
     """The shared bullet, taken from the rendered prompt rather than retyped.
 
@@ -111,7 +127,7 @@ def _extract_old_rule(text: str) -> str:
 def with_access_rule(prompt):
     """A copy of `prompt` whose writing rules permit stating the gate."""
     old = _extract_old_rule(prompt.system)
-    patched = prompt.system.replace(old, ACCESS_RULE, 1)
+    patched = prompt.system.replace(old, ACCESS_RULE + "\n" + STYLE_RULES, 1)
     if patched == prompt.system:                       # pragma: no cover
         raise RuntimeError(
             f"the access rule did not apply to prompt {prompt.id}: the shared "
@@ -120,7 +136,8 @@ def with_access_rule(prompt):
 
 
 WRITING_RULES_ACCESS = WRITING_RULES.replace(
-    _extract_old_rule(WRITING_RULES + "\n  - "), ACCESS_RULE, 1)
+    _extract_old_rule(WRITING_RULES + "\n  - "),
+    ACCESS_RULE + "\n" + STYLE_RULES, 1)
 
 # =============================================================================
 # L9 — CONTRACT INTENT                                     one call per file
