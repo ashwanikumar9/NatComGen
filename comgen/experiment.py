@@ -24,6 +24,15 @@ removes exactly one thing:
                                     deterministic check only ever vetoed.
     G6  no contract intent          what one call per file buys
     G7  no retrieval                as C5
+    G8  retrieval AND the semantic  the two components the val ablations found
+        critic                      inert or harmful, removed together. NOT a
+                                    further ablation: it is the configuration
+                                    those results point at, and it was added
+                                    after seeing them. That makes val its
+                                    selection set, not its evidence — G8's
+                                    number belongs on the TEST split, beside
+                                    G1's, or it is a result fitted to the data
+                                    that produced it.
     G2  no Σ(f)                     as C2
     G0  zero-shot                   as C0, and directly comparable to it
 
@@ -71,6 +80,9 @@ CONFIGS: List[Config] = [
     Config("G4", "deterministic critic only", ("IC", "I7", "G", "CD", "R", "J")),
     Config("G6", "no contract intent", ("I7", "G", "CD", "CS", "R", "J")),
     Config("G7", "no retrieval", FULL_STAGES, retrieval=False),
+    Config("G8", "no retrieval, no semantic critic", ("IC", "I7", "G", "CD",
+                                                      "R", "J"),
+           retrieval=False),
     Config("G2", "no Σ(f) — source only", FULL_STAGES, sigma=drop_all),
     Config("G0", "zero-shot baseline", ("G",), retrieval=False,
            sigma=drop_all),
@@ -89,12 +101,13 @@ ROUNDS: Dict[str, int] = {
     "G4": DEFAULT_ROUNDS,
     "G6": DEFAULT_ROUNDS,
     "G7": DEFAULT_ROUNDS,
+    "G8": DEFAULT_ROUNDS,
     "G2": DEFAULT_ROUNDS,
     "G0": 1,
 }
 
 #: Cache-warm order. See the module docstring.
-RUN_ORDER = ["G1", "G3", "G5", "G4", "G6", "G7", "G2", "G0"]
+RUN_ORDER = ["G1", "G3", "G5", "G4", "G6", "G7", "G8", "G2", "G0"]
 
 
 def ordered(names: Optional[Sequence[str]] = None) -> List[Config]:

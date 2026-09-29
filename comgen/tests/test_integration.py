@@ -289,3 +289,29 @@ def test_the_loop_table_blanks_columns_nothing_measured():
     assert row["clean at r0"] != "—", "the semantic critic did judge the draft"
     assert row["still blocking"] == "—", \
         "only the deterministic critic decides what is blocking"
+
+
+def test_g8_removes_both_components_the_ablations_found_inert():
+    """G8 is the shipping candidate: no retrieval, no semantic critic.
+
+    Chosen after seeing the val ablations — retrieval at p=.887 and the
+    semantic critic at p=1.000, the latter costing 1.33 calls per function —
+    so val is its selection set and the test split is where its number counts.
+    """
+    cfg = X.BY_NAME["G8"]
+    assert cfg.retrieval is False
+    assert "CS" not in cfg.stages, "the semantic critic is gone"
+    assert "CD" in cfg.stages, "the deterministic critic is what drives the loop"
+    assert "R" in cfg.stages and "J" in cfg.stages
+    assert X.ROUNDS["G8"] == X.DEFAULT_ROUNDS
+
+
+def test_g8_runs_after_g7_so_it_reuses_those_calls(tmp_path):
+    """Both drop retrieval, so their L9/L7/L1b requests are identical and the
+    cache serves them — which is why G8 costs about an hour rather than three."""
+    assert X.RUN_ORDER.index("G8") == X.RUN_ORDER.index("G7") + 1
+    s = F.default_script()
+    X.run_one(tmp_path, "G8", F.client(s), split="val", seed=0,
+              out_root=tmp_path / "r", contexts=[F.ctx()])
+    assert s.count("L2") == 0, "no semantic critic call"
+    assert s.count("L1b") == 1
