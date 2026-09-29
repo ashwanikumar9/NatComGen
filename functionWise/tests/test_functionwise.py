@@ -181,3 +181,71 @@ def test_end_to_end_all_kinds_sees_more(tmp_path, capsys):
                    "--natcomgen-runs", str(tmp_path / "absent"),
                    "--split", "val", "--kinds", "all", "--no-write"])
     assert "9 declarations" in capsys.readouterr().out
+
+
+# --------------------------------------------------------------------------
+# qualitative examples
+# --------------------------------------------------------------------------
+
+def _runs_two(tmp: Path, ids):
+    root = tmp / "runs2"
+    good = ("/// @notice Transfers tokens to the recipient address.\n"
+            "/// @param to The recipient address\n")
+    poor = "/// @notice Does a thing.\n"
+    for config, text in (("G8", good), ("G1", poor)):
+        d = root / config
+        d.mkdir(parents=True)
+        d.joinpath("test.jsonl").write_text("\n".join(
+            json.dumps({"pair_id": i, "config": config, "seed": 0,
+                        "final": text}) for i in ids), encoding="utf-8")
+    return root
+
+
+def _corpus_test(tmp: Path) -> Path:
+    root = tmp / "corpus2"
+    root.mkdir()
+    rows = [{"id": f"f{i}", "kind": "function", "split": "test",
+             "container": "Token", "signature": f"send{i}(address)",
+             "project": "demo", "file": "demo/Token.sol",
+             "code": "function send(address to) external {\n    _send(to);\n}",
+             "notice": "Transfers tokens to the recipient address.",
+             "dev": "", "params": {"to": "The recipient address"},
+             "returns": [], "doc_raw": ""} for i in range(5)]
+    (root / "pairs.jsonl").write_text(
+        "\n".join(json.dumps(r) for r in rows), encoding="utf-8")
+    return root
+
+
+def test_examples_render_gold_and_each_config(tmp_path, capsys):
+    from functionWise import examples
+    corpus = _corpus_test(tmp_path)
+    ids = [f"f{i}" for i in range(5)]
+    runs = _runs_two(tmp_path, ids)
+    rc = examples.main(["--corpus", str(corpus), "--comgen-runs", str(runs),
+                        "--natcomgen-runs", str(tmp_path / "absent"),
+                        "--split", "test", "--configs", "G8,G1",
+                        "--n", "2", "--no-write"])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "**Gold**" in out
+    assert "@notice  Transfers tokens to the recipient address." in out
+    assert "**G8**" in out and "**G1**" in out
+    assert "```solidity" in out
+    # the faithful configuration must score above the vague one
+    assert "notice BLEU 0.000" in out
+
+
+def test_examples_refuses_a_missing_config(tmp_path):
+    from functionWise import examples
+    corpus = _corpus_test(tmp_path)
+    runs = _runs_two(tmp_path, [f"f{i}" for i in range(5)])
+    with pytest.raises(SystemExit):
+        examples.main(["--corpus", str(corpus), "--comgen-runs", str(runs),
+                       "--natcomgen-runs", str(tmp_path / "absent"),
+                       "--split", "test", "--configs", "G8,G9", "--no-write"])
+
+
+def test_tidy_strips_comment_markers():
+    from functionWise import examples
+    got = examples.tidy("/**\n * @notice Sends tokens.\n * @param to Address\n */")
+    assert got == "@notice Sends tokens.\n@param to Address"
