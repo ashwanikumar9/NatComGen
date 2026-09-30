@@ -27,6 +27,7 @@ the headline number, never instead of it.
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -40,6 +41,8 @@ from benchmarks.smartdoc.bleu import corpus_bleu                 # noqa: E402
 from natspec_corpus import access as A                           # noqa: E402
 from natspec_corpus.report import markdown_table                 # noqa: E402
 from natspec_corpus.versioning import next_path                  # noqa: E402
+
+from functionWise import surface                                 # noqa: E402
 
 SYSTEMS = ("attendgru", "ast-attendgru", "re2com", "smartdoc")
 FOLDS = tuple(f"cross_project/fold_{i}" for i in range(1, 6))
@@ -70,6 +73,90 @@ def _fmt(v) -> str:
     return "—" if v is None else f"{v:.2f}"
 
 
+
+def _comgen_section(args, pkg: Path, code: List[str], ref: List[str],
+                    hyp: List[str]) -> str:
+    """ComGen scored on exactly the functions SmartDoc was scored on.
+
+    The three rows share one denominator on purpose. A pilot over ten
+    functions compared against SmartDoc's full 297 would not be a comparison,
+    and it is the easiest mistake to make here.
+    """
+    idx = args.eval_corpus.expanduser() / "index.jsonl"
+    if not idx.exists():
+        return ("\n## ComGen on their functions\n\n`index.jsonl` not found — "
+                f"run `python3 -m functionWise.smartdoc_corpus --pkg {pkg} "
+                f"--out {args.eval_corpus}` first.\n")
+    line_of = {}
+    for l in idx.read_text(encoding="utf-8").splitlines():
+        if l.strip():
+            r = json.loads(l)
+            line_of[r["id"]] = r["line"]
+
+    got: Dict[int, str] = {}
+    root = args.comgen_runs.expanduser()
+    for path in sorted(root.rglob("test.jsonl")):
+        for l in path.read_text(encoding="utf-8").splitlines():
+            if not l.strip():
+                continue
+            rec = json.loads(l)
+            if (rec.get("config") != args.comgen_config
+                    or rec.get("seed") != args.comgen_seed
+                    or rec.get("error")):
+                continue
+            ln = line_of.get(rec.get("pair_id"))
+            if ln is not None:
+                got[ln] = rec.get("final") or ""
+    if not got:
+        return (f"\n## ComGen on their functions\n\nno {args.comgen_config} "
+                f"records at seed {args.comgen_seed} under {root}.\n")
+
+    shared = sorted(l for l in got if l < min(len(code), len(ref), len(hyp)))
+    out = [f"\n## ComGen on their functions\n",
+           f"Both systems on the same {len(shared)} functions from SmartDoc's "
+           f"own test set. ComGen runs here **without a fact table** — their "
+           f"release does not compile — so this is its ungrounded "
+           f"configuration.\n"]
+
+    # gates, one denominator
+    gated = [(l, A.caller_gates({"code": code[l]}, None)) for l in shared]
+    gated = [(l, g) for l, g in gated if g]
+    if gated:
+        rows = []
+        for label, text_of in (("their reference", lambda l: ref[l]),
+                               ("SmartDoc", lambda l: hyp[l]),
+                               (f"ComGen {args.comgen_config}",
+                                lambda l: got[l])):
+            ok = sum(1 for l, gs in gated
+                     if all(A.states(text_of(l), g) for g in gs))
+            rows.append([label, str(len(gated)), str(ok),
+                         f"{ok / len(gated) * 100:.0f}%"])
+        out.append(markdown_table(
+            ["comment", "gated functions", "states the gate", "rate"], rows))
+        out.append("\nSame functions, same metric, both systems. This is the "
+                   "fully controlled version of the gate comparison, and "
+                   "ComGen reaches it with its fact table switched off.\n")
+
+    # notice BLEU, one denominator
+    def norm(s): return surface.normalize(s, args.normalize)
+    refs = [norm(ref[l]) for l in shared]
+    rows = []
+    for label, hyps in (("SmartDoc", [norm(hyp[l]) for l in shared]),
+                        (f"ComGen {args.comgen_config}",
+                         [norm(surface.join(surface.hypothesis_view(
+                             got[l], "notice"))) for l in shared])):
+        pairs = [(r, h) for r, h in zip(refs, hyps)]
+        rows.append([label, str(len(pairs))]
+                    + [_fmt(bleu(pairs, k)) for k in ("Ba", "B1", "B4")])
+    out.append("\n" + markdown_table(
+        ["system", "n", "Ba", "B1", "B4"], rows))
+    out.append("\nSmartDoc was trained on 6,878 pairs from this corpus; "
+               "ComGen has seen none of it and is running ungrounded. Expect "
+               "SmartDoc to win this cell, and report it beside the subset "
+               "ladder above rather than alone.\n")
+    return "\n".join(out)
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(
         description=__doc__.split("\n")[0],
@@ -77,6 +164,15 @@ def main(argv=None) -> int:
     ap.add_argument("--pkg", type=Path, required=True,
                     help="the cloned xing-hu/SmartDoc repository, dataset.zip "
                          "already unzipped in place")
+    ap.add_argument("--comgen-runs", type=Path, default=None,
+                    help="records from running ComGen on their test set, e.g. "
+                         "comgen/results/smartdoc_runs")
+    ap.add_argument("--eval-corpus", type=Path, default=HERE / "data/SmartDocEval",
+                    help="the corpus built by functionWise.smartdoc_corpus; "
+                         "its index.jsonl maps pair ids back to their lines")
+    ap.add_argument("--comgen-config", default="G1")
+    ap.add_argument("--comgen-seed", type=int, default=0)
+    ap.add_argument("--normalize", default="paper", choices=surface.MODES)
     ap.add_argument("--out", type=Path, default=HERE / "results/functionwise")
     ap.add_argument("--no-write", action="store_true")
     args = ap.parse_args(argv)
@@ -183,6 +279,11 @@ def main(argv=None) -> int:
                    "comparable. What is comparable is the gap. A system trained "
                    "to imitate its references cannot exceed them; one grounded "
                    "in a fact table can.\n")
+
+
+    # ---- 4. ComGen on their functions ------------------------------------
+    if args.comgen_runs:
+        doc.append(_comgen_section(args, pkg, code, ref, hyp))
 
     text = "\n".join(doc)
     print(text)
