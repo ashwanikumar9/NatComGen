@@ -70,10 +70,17 @@ _SENTENCE = re.compile(r"[.;\n]")
 
 #: Words that turn a mention of a principal into a statement about who may
 #: call. "the owner is set to _owner" is not an access statement.
+#: `allow` and `permit` are in here because "Allows the owner to revoke the
+#: vesting" is the dominant Ethereum idiom for stating access control, and a
+#: cue list without them scores a corpus that prefers that phrasing at near
+#: zero — which would not be a finding, it would be a measurement artifact.
+#: The cost is a false positive on "Allows the owner to be changed", where the
+#: principal is the object of the action rather than its subject. Accepting a
+#: few of those is the right trade against missing a whole idiom.
 _RESTRICTION = re.compile(
     r"\bonly\b|\brestrict\w*\b|\bpermission\w*\b|\bmust be\b|\bcan(?:not)? be "
     r"called\b|\bcallable\b|\bcaller\b|\brequires?\b|\bauthori[sz]\w*\b|"
-    r"\breverts?\b|\bgated?\b", re.I)
+    r"\breverts?\b|\bgated?\b|\ballow\w*\b|\bpermit\w*\b", re.I)
 
 
 def _pieces(name: str) -> List[str]:

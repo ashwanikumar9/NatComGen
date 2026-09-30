@@ -89,3 +89,15 @@ def test_undeclared_and_invented_are_opposite_directions():
     assert A.invented(open_fn, None, "Can only be called by the admin.") \
         == ["admin"]
     assert A.invented(open_fn, None, "Sets the admin address.") == []
+
+
+def test_the_allows_idiom_counts_as_stating_the_restriction():
+    """"Allows the owner to revoke the vesting" is how much of the Ethereum
+    corpus states access control. A cue list without it scores a corpus that
+    prefers that phrasing near zero, which is a measurement artifact and not a
+    finding."""
+    gate = A.Gate("onlyOwner", A.CALLER, "owner")
+    assert A.states("Allows the owner to revoke the vesting.", gate)
+    assert A.states("Permits the owner to withdraw.", gate)
+    assert not A.states("Sets the owner to the given address.", gate)
+    assert not A.states("Returns the owner.", gate)
