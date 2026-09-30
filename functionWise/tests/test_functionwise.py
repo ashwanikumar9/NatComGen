@@ -249,3 +249,45 @@ def test_tidy_strips_comment_markers():
     from functionWise import examples
     got = examples.tidy("/**\n * @notice Sends tokens.\n * @param to Address\n */")
     assert got == "@notice Sends tokens.\n@param to Address"
+
+
+# --------------------------------------------------------------------------
+# before / after comparison
+# --------------------------------------------------------------------------
+
+def test_mcnemar_uses_only_the_discordant_pairs():
+    from functionWise.compare_runs import mcnemar
+    assert mcnemar(0, 0) == 1.0
+    assert mcnemar(5, 5) == 1.0                  # symmetric change, no signal
+    assert mcnemar(0, 12) < 0.001                # all movement one way
+    assert mcnemar(2, 12) < 0.05
+    assert mcnemar(0, 12) == pytest.approx(2 * 0.5 ** 12, rel=1e-9)
+
+
+def _run_files(tmp: Path, name: str, ids, text) -> str:
+    d = tmp / name
+    d.mkdir(parents=True)
+    for seed in (0, 1):
+        (d / f"seed{seed}-test.jsonl").write_text("\n".join(
+            json.dumps({"pair_id": i, "config": "G1", "seed": seed,
+                        "final": text}) for i in ids), encoding="utf-8")
+    return str(d / "seed*-test.jsonl")
+
+
+def test_compare_pairs_on_the_intersection_only(tmp_path, capsys):
+    from functionWise import compare_runs
+    corpus = _corpus_test(tmp_path)
+    before = _run_files(tmp_path, "before", [f"f{i}" for i in range(5)],
+                        "/// @notice Does a thing.\n")
+    # the after run is missing one function: it must drop from BOTH sides
+    after = _run_files(tmp_path, "after", [f"f{i}" for i in range(4)],
+                       "/// @notice Transfers tokens to the recipient address.\n"
+                       "/// @param to The recipient address\n")
+    rc = compare_runs.main(["--before", before, "--after", after,
+                            "--corpus", str(corpus), "--split", "test",
+                            "--label", "G1", "--no-write"])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "4 functions completed by both runs" in out
+    assert "## Whole comment" in out
+    assert "Δ" in out

@@ -102,6 +102,11 @@ def main(argv=None) -> int:
 
     every = scope.load_pairs(args.corpus)
     kinds = scope.parse_kinds(args.kinds)
+    tables = scope.load_tables(args.corpus)
+    if not tables:
+        print("note: no sigma tables found — caller guards in the body will "
+              "not be seen, only modifiers on the declaration",
+              file=sys.stderr)
 
     doc = [f"# Caller gates — {args.split}, {'+'.join(kinds)}\n"]
 
@@ -112,7 +117,7 @@ def main(argv=None) -> int:
         sub = scope.scoped(every, split=s, kinds=kinds)
         if not sub:
             continue
-        m = measure(sub, lambda pid: gold_text(sub[pid]))
+        m = measure(sub, lambda pid: gold_text(sub[pid]), tables)
         rows.append([s, str(len(sub)), str(m["gated"]),
                      _pct(m["gated"] / len(sub)), _pct(m["recall"])])
     doc.append("## Coverage\n\n" + markdown_table(head, rows))
@@ -120,7 +125,7 @@ def main(argv=None) -> int:
                "Develop on train, report on test.\n")
 
     pairs = scope.scoped(every, split=args.split, kinds=kinds)
-    gold = measure(pairs, lambda pid: gold_text(pairs[pid]))
+    gold = measure(pairs, lambda pid: gold_text(pairs[pid]), tables)
 
     results = {"gold": gold}
     head = ["system", "n scored", "caller-gated", "states the gate",
@@ -146,7 +151,7 @@ def main(argv=None) -> int:
                       f"{args.seed}", file=sys.stderr)
                 continue
             sub = {k: v for k, v in pairs.items() if k in got}
-            m = measure(sub, lambda pid: got.get(pid))
+            m = measure(sub, lambda pid: got.get(pid), tables)
             results[name] = m
             rows.append([name, str(len(sub)), str(m["gated"]),
                          str(m["stated"]), _pct(m["recall"]), str(m["ungated"]),

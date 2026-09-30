@@ -142,3 +142,24 @@ def reference_lengths(pairs: Dict[str, dict]) -> Tuple[list, list]:
         rows.append([name, str(len(vals)), f"{sum(vals) / len(vals):.1f}",
                      f"{median(vals):.0f}", str(p10), str(p90)])
     return headers, rows
+
+def load_tables(corpus_root: Path) -> Dict[str, dict]:
+    """Sigma(f) keyed by pair id, or {} when the corpus has none.
+
+    `gates.py` needs these: without them `access.gates_for` sees only the
+    modifiers on the declaration, and the `R*` caller guards -- the honest
+    evidence the writing rules always wanted -- are never consulted. That is
+    the difference between counting a correct "only the hub may call this" as
+    an invention and reading it off the guard that enforces it.
+    """
+    path = Path(corpus_root) / "sigma" / "sigma.jsonl"
+    if not path.exists():
+        return {}
+    out: Dict[str, dict] = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        if row.get("pair_id"):
+            out[row["pair_id"]] = row
+    return out
