@@ -81,10 +81,14 @@ ACCESS_RULE = """\
     not establish WHO may call the function — only an R* row or a CFG guard
     does. But an F* modifier row does establish THAT the function is gated, and
     you must say so. Write it as one clause naming both the restriction and the
-    modifier it comes from: "Can only be called by the owner (`onlyOwner`)
-    [F7]". Name the principal only when the modifier's name carries one; when
-    it does not, name the modifier alone: "Callable only when `auth` permits
-    [F4]". This clause goes in @dev — open a @dev tag if the comment has none.
+    modifier it comes from: "Can only be called by the owner (`onlyOwner`)".
+    Name the principal only when the modifier's name carries one; when it does
+    not, name the modifier alone: "Callable only when `auth` permits".
+    NEVER WRITE AN EVIDENCE ID INTO THE COMMENT. F7, R2 and the rest are this
+    system's internal bookkeeping; they are cited in your reasoning to the
+    critics, never in the NatSpec a developer reads. A comment containing
+    "[F7]" is defective output.
+    This clause goes in @dev — open a @dev tag if the comment has none.
     NEVER put it inside a @param or @return: solc attributes it to that
     parameter, which both misfiles the restriction and corrupts the
     parameter's description. Write it once, on its own line, with its citation

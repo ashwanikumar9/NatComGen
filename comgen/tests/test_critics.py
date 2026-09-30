@@ -284,3 +284,30 @@ def test_structural_findings_still_block():
                   severity="blocking", why="…", subject="amount")])
     g = C.merge(det, C.not_run(C.SEMANTIC))
     assert g.blocking == 1 and not g.clean
+
+
+def test_an_evidence_id_in_the_comment_is_a_defect():
+    """Introduced by an access-rule example that showed "[F7]" inside the
+    clause: 0% of the archived runs carried ids, 26% of the next run did.
+    Nothing downstream strips them, so the check has to exist."""
+    from comgen import critics as C
+    from types import SimpleNamespace
+    pair = {"id": "x", "file": "a.sol", "name": "f", "signature": "f()",
+            "code": "function f() external onlyOwner { }"}
+    ctx = SimpleNamespace(pair=pair, table=None, unit=None, version=None)
+    bad = "/// @dev Can only be called by the owner (`onlyOwner` [F7]).\n"
+    found = [f for f in C._access_findings(ctx, bad)
+             if f.text.startswith("style_citation")]
+    assert found and "F7" in found[0].text
+    clean = "/// @dev Can only be called by the owner (`onlyOwner`).\n"
+    assert not [f for f in C._access_findings(ctx, clean)
+                if f.text.startswith("style_citation")]
+
+
+def test_a_citation_finding_steers_without_blocking():
+    from comgen import critics as C
+    det = C.CriticVerdict(name=C.DETERMINISTIC, ran=True, findings=[
+        C.Finding(source=C.DETERMINISTIC, text="style_citation:F7",
+                  severity="blocking", why="…")])
+    g = C.merge(det, C.not_run(C.SEMANTIC))
+    assert g.blocking == 0 and g.total == 1 and not g.clean

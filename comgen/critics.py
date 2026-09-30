@@ -197,6 +197,15 @@ def _access_findings(ctx, candidate: str) -> List[Finding]:
                 f"function is access-gated and the comment does not say so. "
                 f"State it once, in @dev: that {who}, naming the modifier it "
                 f"comes from."))
+    leaked = _CITATION.findall(candidate or "")
+    if leaked:
+        out.append(Finding(
+            source=DETERMINISTIC, text="style_citation:" + ",".join(leaked[:3]),
+            severity="blocking",
+            why=f"the comment contains the evidence id(s) "
+                f"{', '.join(leaked[:3])}. Those are this system's internal "
+                f"bookkeeping and must not appear in NatSpec a developer "
+                f"reads. Delete the brackets and keep the sentence."))
     for field in _access.misplaced(ctx.pair, table, candidate):
         out.append(Finding(
             source=DETERMINISTIC, text=f"access_misplaced:{field}",
@@ -292,6 +301,11 @@ def semantic(ctx, candidate: str, client: Client,
 
 
 _TAG = re.compile(r"@(param|return)\s+(\w+)?")
+
+#: F7, R2, [F1, R3] — the ids the critics and the Judge work in. They belong
+#: in the reasoning channel, never in the emitted comment. Nothing downstream
+#: strips them, so a leak reaches every metric and every reader.
+_CITATION = re.compile(r"\[(?:[FRENPCD]\d+)(?:\s*,\s*[FRENPCD]\d+)*\]")
 
 
 def _tag_subject(quote: str) -> Optional[str]:
@@ -398,8 +412,9 @@ def merge(det: CriticVerdict, sem: CriticVerdict) -> GroupVerdict:
     # they had before this check existed, and the reported numbers stay
     # comparable across the change. Promote these to must-fix only once access
     # coverage is a reported result in its own right.
-    g.must_fix = [f for f in det.findings if not f.text.startswith("access_")]
-    access = [f for f in det.findings if f.text.startswith("access_")]
+    _steer = ("access_", "style_")
+    g.must_fix = [f for f in det.findings if not f.text.startswith(_steer)]
+    access = [f for f in det.findings if f.text.startswith(_steer)]
 
     required = {f.subject for f in det.findings
                 if f.subject and f.text.split(":", 1)[0] in _REQUIRING}
