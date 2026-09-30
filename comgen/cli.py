@@ -186,7 +186,19 @@ def cmd_run(args) -> int:
                 print(f"dropped {gone} error records so they are re-attempted")
 
     cache = CallCache(root / ".call-cache")
-    index = build_index(root)
+
+    # The retrieval index is built from ComGen's OWN training pool, which is
+    # not always the corpus being documented. Running over another paper's
+    # test functions, the exemplars must still come from NatSpecGold — that is
+    # what the retrieval stage is for, and the foreign corpus has no train
+    # split to draw from anyway. Defaults to the corpus, so an ordinary run is
+    # unchanged.
+    index_root = Path(args.index_corpus).expanduser() if getattr(
+        args, "index_corpus", None) else root
+    index = build_index(index_root)
+    if index_root != root:
+        print(f"retrieval index from {index_root} (documenting {root})",
+              flush=True)
     contexts = load_contexts(root, args.split)
     if limit:
         contexts = contexts[:limit]
@@ -289,6 +301,10 @@ def build_parser() -> argparse.ArgumentParser:
     r.add_argument("--ollama")
     r.add_argument("--out", help="where the records go "
                                 "(default: comgen/results/runs)")
+    r.add_argument("--index-corpus",
+                   help="build the retrieval index from this corpus instead "
+                        "of --corpus; use it when documenting a corpus that "
+                        "has no train split of its own")
     r.add_argument("--keep-errors", action="store_true",
                    help="treat an existing error record as done instead of "
                         "re-attempting it")

@@ -161,8 +161,11 @@ def main(argv=None) -> int:
     print(f"  caller-gated: {gated}")
     print(f"  no sigma/ and an empty contracts/ — ComGen will run UNGROUNDED "
           f"here, which is the point to state in the write-up")
-    print(f"\nnext:\n  python3 -m comgen run --corpus {out} --split test "
-          f"--configs G1 --seeds 0 --out comgen/results/smartdoc_runs")
+    print(f"\nnext:\n  python3 -m comgen run --corpus {out} "
+          f"--index-corpus data/NatSpecGold --split test "
+          f"--configs G1 --seeds 0 --out comgen/results/smartdoc_runs\n"
+          f"\n  --index-corpus matters: retrieval exemplars come from "
+          f"ComGen's own training pool, and this corpus has no train split.")
     return 0
 
 
