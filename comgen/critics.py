@@ -197,6 +197,14 @@ def _access_findings(ctx, candidate: str) -> List[Finding]:
                 f"function is access-gated and the comment does not say so. "
                 f"State it once, in @dev: that {who}, naming the modifier it "
                 f"comes from."))
+    for field in _access.misplaced(ctx.pair, table, candidate):
+        out.append(Finding(
+            source=DETERMINISTIC, text=f"access_misplaced:{field}",
+            severity="blocking", subject=field.split(":", 1)[-1],
+            why=f"the caller restriction is written inside `@{field}`, so "
+                f"solc attributes it to that tag. Move it to @dev on its own "
+                f"line and leave `@{field}` describing only its own "
+                f"parameter."))
     for word in _access.invented(ctx.pair, table, candidate):
         out.append(Finding(
             source=DETERMINISTIC, text=f"access_invented:{word}",

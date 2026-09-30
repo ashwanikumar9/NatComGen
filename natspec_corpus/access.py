@@ -297,3 +297,28 @@ def invented(pair: dict, table: Optional[dict], comment: str) -> List[str]:
             seen.add(w)
             uniq.append(w)
     return uniq
+
+def misplaced(pair: dict, table: Optional[dict], comment: str) -> List[str]:
+    """Fields that state a caller gate but are not @notice or @dev.
+
+    A restriction filed under `@param amount` is attributed by solc to that
+    parameter, so the tag now describes the wrong thing and the parameter's
+    own description is polluted. The comment still *says* who may call, which
+    is why whole-comment gate recall does not catch this — hence a check of
+    its own.
+
+    Observed at 3% of functions for G1 and 10% for G8 when the writing rule
+    said to use @dev "unless the function has no @dev": with no @dev present
+    the model appended the clause to whichever tag came last.
+    """
+    from .evaluate import fields as _fields
+    gates = caller_gates(pair, table)
+    if not gates:
+        return []
+    out: List[str] = []
+    for key, text in _fields(comment or "").items():
+        if key in ("notice", "dev"):
+            continue
+        if any(states(text, g) for g in gates):
+            out.append(key)
+    return out

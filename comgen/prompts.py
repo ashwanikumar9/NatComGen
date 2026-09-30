@@ -84,8 +84,11 @@ ACCESS_RULE = """\
     modifier it comes from: "Can only be called by the owner (`onlyOwner`)
     [F7]". Name the principal only when the modifier's name carries one; when
     it does not, name the modifier alone: "Callable only when `auth` permits
-    [F4]". Put this clause in @dev unless the function has no @dev, and never
-    write it twice.
+    [F4]". This clause goes in @dev — open a @dev tag if the comment has none.
+    NEVER put it inside a @param or @return: solc attributes it to that
+    parameter, which both misfiles the restriction and corrupts the
+    parameter's description. Write it once, on its own line, with its citation
+    on the same line.
   - Not every modifier restricts the caller. `nonReentrant` and `lock` are
     reentrancy guards; `onlyLive`, `whenNotPaused` and `onlyOrchestrated` gate
     on contract state, not on who is calling. Do not describe those as caller

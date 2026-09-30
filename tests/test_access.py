@@ -101,3 +101,23 @@ def test_the_allows_idiom_counts_as_stating_the_restriction():
     assert A.states("Permits the owner to withdraw.", gate)
     assert not A.states("Sets the owner to the given address.", gate)
     assert not A.states("Returns the owner.", gate)
+
+
+def test_a_gate_stated_inside_a_param_tag_is_misplaced():
+    """solc attributes it to that parameter, so the tag describes the wrong
+    thing and the parameter's own description is polluted. Whole-comment gate
+    recall cannot see this, which is why it has its own check."""
+    pair = {"code": "function mint ( address to , uint256 amount ) "
+                    "public onlyOwner ( ) { }"}
+    bad = ("/// @notice Mints tokens.\n"
+           "/// @param to The address\n"
+           "/// @param amount The amount Can only be called by the owner\n")
+    good = ("/// @notice Mints tokens.\n"
+            "/// @dev Can only be called by the owner (`onlyOwner`).\n"
+            "/// @param to The address\n"
+            "/// @param amount The amount\n")
+    assert A.misplaced(pair, None, bad) == ["param:amount"]
+    assert A.misplaced(pair, None, good) == []
+    # it still counts as stated — the two checks answer different questions
+    gate = A.caller_gates(pair, None)[0]
+    assert A.states(bad, gate)

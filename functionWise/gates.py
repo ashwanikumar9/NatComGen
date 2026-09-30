@@ -50,7 +50,7 @@ def gold_text(pair: dict) -> str:
 
 
 def measure(pairs: Dict[str, dict], text_of, tables=None) -> dict:
-    gated = ungated = stated = invented = 0
+    gated = ungated = stated = invented = wrong_tag = 0
     missed: List[str] = []
     for pid, pair in pairs.items():
         table = (tables or {}).get(pid)
@@ -60,6 +60,8 @@ def measure(pairs: Dict[str, dict], text_of, tables=None) -> dict:
         gates = A.caller_gates(pair, table)
         if gates:
             gated += 1
+            if A.misplaced(pair, table, comment):
+                wrong_tag += 1
             if all(A.states(comment, g) for g in gates):
                 stated += 1
             else:
@@ -69,7 +71,8 @@ def measure(pairs: Dict[str, dict], text_of, tables=None) -> dict:
             if A.invented(pair, table, comment):
                 invented += 1
     return {"gated": gated, "stated": stated, "ungated": ungated,
-            "invented": invented, "missed": missed,
+            "invented": invented, "missed": missed, "wrong_tag": wrong_tag,
+            "wrong_tag_rate": wrong_tag / gated if gated else None,
             "recall": stated / gated if gated else None,
             "invention_rate": invented / ungated if ungated else None}
 
@@ -129,9 +132,11 @@ def main(argv=None) -> int:
 
     results = {"gold": gold}
     head = ["system", "n scored", "caller-gated", "states the gate",
-            "gate recall", "ungated", "invents one", "invention rate"]
+            "gate recall", "in the wrong tag", "ungated", "invents one",
+            "invention rate"]
     rows = [["gold (reference)", str(len(pairs)), str(gold["gated"]),
-             str(gold["stated"]), _pct(gold["recall"]), str(gold["ungated"]),
+             str(gold["stated"]), _pct(gold["recall"]),
+             _pct(gold["wrong_tag_rate"]), str(gold["ungated"]),
              str(gold["invented"]), _pct(gold["invention_rate"])]]
 
     if not args.gold_only:
@@ -154,7 +159,8 @@ def main(argv=None) -> int:
             m = measure(sub, lambda pid: got.get(pid), tables)
             results[name] = m
             rows.append([name, str(len(sub)), str(m["gated"]),
-                         str(m["stated"]), _pct(m["recall"]), str(m["ungated"]),
+                         str(m["stated"]), _pct(m["recall"]),
+                         _pct(m["wrong_tag_rate"]), str(m["ungated"]),
                          str(m["invented"]), _pct(m["invention_rate"])])
             if args.list_missed and m["missed"]:
                 doc.append(f"\n`{name}` missed: "
@@ -164,7 +170,10 @@ def main(argv=None) -> int:
     doc.append("\n## Gate recall\n\n" + markdown_table(head, rows))
     doc.append("\n`gate recall` is the share of caller-gated functions whose "
                "comment states the restriction; `invention rate` is the share "
-               "of ungated functions whose comment claims one. Recall bought "
+               "of ungated functions whose comment claims one. `in the wrong "
+               "tag` is the share whose restriction sits inside a @param or "
+               "@return, where solc attributes it to that parameter — the "
+               "comment says it, but files it wrongly. Recall bought "
                "by invention is not an improvement, so the two are always "
                "read together. Neither uses the reference, so a configuration "
                "may exceed the gold row — which is the result worth having.\n")
